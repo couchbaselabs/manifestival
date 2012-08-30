@@ -10,7 +10,8 @@ function on_index_html(html) {
         var suffix = s[s.length - 1].split('-');
         var version = suffix[0];
         var build = suffix[1];
-        console.debug(url, name, arch, suffix, version, build);
+        var pkg = suffix[2].split('.')[1];
+        console.debug(url, name, arch, version, build, pkg);
     }
 }
 
