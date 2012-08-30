@@ -10,14 +10,18 @@ function on_index_html(html) {
         var suffix = s[s.length - 1].split('-');
         var version = suffix[0];
         var build = suffix[1];
-        var pkg = suffix[2].split('.')[1];
-        console.debug(url, name, arch, version, build, pkg);
+        if (suffix && suffix[2]) {
+            var pkg = suffix[2].split('.')[suffix[2].split('.') - 2];
+            console.debug(url, name, arch, version, build, pkg);
+        }
     }
 }
 
-$(document).ready(function(){
-        $.get("../../index.html", null,
-              function(response, textStatus, jqXHR){
-                  on_index_html(response);
-              });
-    });
+function on_ready() {
+    $.get("../../index.html", null,
+          function(response, textStatus, jqXHR){
+              on_index_html(response);
+          });
+}
+
+$(document).ready(on_ready);
