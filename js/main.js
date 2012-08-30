@@ -4,8 +4,13 @@ function on_index_html(html) {
     for (var i = 0; i < hrefs.length; i++) {
         var href = hrefs[i];
         var url = href.split('"')[1];
-        var parts = url.split('.');
-        console.debug(url, parts);
+        var s = url.split('_');
+        var name = s[0];
+        var arch = s.slice(1, s.length - 1).join("_");
+        var suffix = s[s.length - 1].split('-');
+        var version = suffix[0];
+        var build = suffix[1];
+        console.debug(url, name, arch, suffix, version, build);
     }
 }
 
