@@ -1,3 +1,4 @@
+Copyright (c) Couchbase, Inc.
 Copyright (c) HTML5 Boilerplate
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of
