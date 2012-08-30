@@ -1,3 +1,6 @@
 $(document).ready(function(){
-        alert("Thanks for visiting!");
+        $.get("../../index.html", null,
+              function(response, textStatus, jqXHR){
+                  alert(response);
+              });
     });
