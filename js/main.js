@@ -3,8 +3,9 @@ function on_index_html(html) {
     var hrefs = html.match(/href="[^\"]+"/g);
     for (var i = 0; i < hrefs.length; i++) {
         href = hrefs[i];
-        url = href.split('"')[1])
-        console.debug(url);
+        url = href.split('"')[1];
+        parts = url.split('.');
+        console.debug(url, parts);
     }
 }
 
