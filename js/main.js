@@ -11,7 +11,7 @@ function on_index_html(html) {
         var version = suffix[0];
         var build = suffix[1];
         if (suffix && suffix[2]) {
-            var pkg = suffix[2].split('.')[suffix[2].split('.').length - 2];
+            var pkg = suffix[2].split('.')[suffix[2].split('.').length - 3];
             console.debug(url, name, arch, version, build, pkg);
         }
     }
