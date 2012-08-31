@@ -6,7 +6,7 @@
  * Kroc Camen, and the H5BP dev community and team.
  */
 
-.versions, .builds, .archs, .pkgs, .pkg {
+.versions, .version, .builds, .build, .archs, .arch, .pkgs, .pkg {
   display: inline;
   border: 1px solid #bbb;
 }

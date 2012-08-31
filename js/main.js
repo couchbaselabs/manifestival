@@ -74,11 +74,11 @@ function gen(hier) {
                     }
                     r[r.length] = '</div></div>';
                 }
-                r[r.length] = '</div></div>';
+                r[r.length] = '</div></div><br/>';
             }
-            r[r.length] = '</div></div>';
+            r[r.length] = '</div></div><br/>';
         }
-        r[r.length] = '</div></div>';
+        r[r.length] = '</div></div><br/>';
     }
     return r;
 }
