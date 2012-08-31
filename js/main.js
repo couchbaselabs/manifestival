@@ -50,7 +50,7 @@ function gen(hier) {
         var name = names[i0];
         r[r.length] = '<div class="name">' + name + '<div class="versions">';
         var versions = hier[name];
-        var k1 = keys(versions).sort();
+        var k1 = keys(versions).sort().reverse();
         for (var i1 = 0; i1 < k1.length; i1++) {
             var version = k1[i1];
             r[r.length] = '<div class="version">' + version + '<div class="builds">';
