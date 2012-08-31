@@ -29,7 +29,10 @@ function on_index_html(html) {
         }
     }
 
-    $('#content').html(gen(hier).join(''));
+    var r = gen(hier, [true, true, true, false]);
+    var h = '<table border="1"><tr>' + r.join('') + '</tr></table>';
+
+    $('#content').html(h);
 }
 
 function add_entry(hier, path, val) {
@@ -43,47 +46,35 @@ function add_entry(hier, path, val) {
     hier[path[path.length - 1]] = val;
 }
 
-function gen(hier) {
+function gen(hier, reversals) {
+    var keys = map_keys(hier).sort();
+    if (reversals[0]) {
+        keys = keys.reverse();
+    }
+    console.debug(keys);
+    var child_reversals = reversals.slice(1);
     var r = [];
-    var names = keys(hier).sort();
-    for (var i0 = 0; i0 < names.length; i0++) {
-        var name = names[i0];
-        r[r.length] = '<div class="name">' + name + '<div class="versions">&nbsp;';
-        var versions = hier[name];
-        var k1 = keys(versions).sort().reverse();
-        for (var i1 = 0; i1 < k1.length; i1++) {
-            var version = k1[i1];
-            r[r.length] = '<div class="version">' + version + '<div class="builds">&nbsp;';
-            var builds = versions[version];
-            var k2 = keys(builds).sort().reverse();
-            for (var i2 = 0; i2 < k2.length; i2++) {
-                var build = k2[i2];
-                r[r.length] = '<div class="build">' + build + '<div class="archs">&nbsp;';
-                var archs = builds[build];
-                var k3 = keys(archs).sort();
-                for (var i3 = 0; i3 < k3.length; i3++) {
-                    var arch = k3[i3];
-                    r[r.length] = '<div class="arch">' + arch + '<div class="pkgs">&nbsp;';
-                    var pkgs = archs[arch];
-                    var k4 = keys(pkgs).sort();
-                    for (var i4 = 0; i4 < k4.length; i4++) {
-                        var pkg = k4[i4];
-                        var p = pkgs[pkg];
-                        var u = (p.url || '').replace('.manifest.xml', '');
-                        r[r.length] = '<div class="pkg"><a href="../../' + u + '">' + pkg + '</a></div>';
-                    }
-                    r[r.length] = '</div></div>';
-                }
-                r[r.length] = '</div></div><br/>';
+    for (var i = 0; i < keys.length; i++) {
+        var key = keys[i];
+        var val = hier[key];
+        if (reversals.length > 0) {
+            var child_r = gen(val, child_reversals);
+            if (i > 0) {
+                r.push('</tr><tr>');
             }
-            r[r.length] = '</div></div><br/>';
+            var child_n = (child_r.join('').match(/<tr>/g) || []).length + 1;
+            console.debug(i, key, child_n, child_r.join(''));
+            r.push('<td rowspan="' + child_n + '">' + key + '</td>');
+            r = r.concat(child_r);
+        } else {
+            var url = (val.url || '').replace('.manifest.xml', '');
+            r.push('<td><a href="../../' + url + '">' + key + '</a></td>');
         }
-        r[r.length] = '</div></div><br/>';
     }
     return r;
 }
 
-function keys(m) {
+function map_keys(m) {
     var keys = [];
     for (var key in m) {
         keys[keys.length] = key;
@@ -92,6 +83,19 @@ function keys(m) {
 }
 
 function on_ready() {
+    if (false) {
+        on_index_html('<a href="couchbase-server-community_x86_64_2.0.0c-709-rel.rpm.manifest.xml">' +
+                      '<a href="couchbase-server-community_x86_64_2.0.0c-710-rel.rpm.manifest.xml">' +
+                      '<a href="couchbase-server-community_x86_64_2.0.0c-710-rel.deb.manifest.xml">' +
+                      '<a href="couchbase-server-community_x86_64_2.0.0c-710-rel.exe.manifest.xml">' +
+                      '<a href="couchbase-server-community_x86_64_2.0.0c-711-rel.rpm.manifest.xml">' +
+                      '<a href="couchbase-server-community_x86_64_2.0.0c-711-rel.deb.manifest.xml">' +
+                      '<a href="couchbase-server-community_x86_64_2.0.0c-711-rel.exe.manifest.xml">' +
+                      '<a href="couchbase-server-community_x86_64_2.0.0-170-rel.rpm.manifest.xml">' +
+                      '<a href="couchbase-server-community_x86_64_2.0.0-171-rel.deb.manifest.xml">');
+        return;
+    }
+
     $.get("../../index.html", null,
           function(response, textStatus, jqXHR){
               on_index_html(response);
