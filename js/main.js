@@ -59,8 +59,8 @@ function gen(hier) {
                     var pkgs = archs[arch];
                     for (var pkg in keys(pkgs).sort()) {
                         var p = pkgs[pkg];
-                        var u = p.url.replace('.manifest.xml', '');
-                        r[r.length] = '<div class="pkg"><a href="' + url + '">' + pkg + '</a></div>';
+                        var u = (p.url || '').replace('.manifest.xml', '');
+                        r[r.length] = '<div class="pkg"><a href="' + u + '">' + pkg + '</a></div>';
                     }
                     r[r.length] = '</div></div>';
                 }
