@@ -1,5 +1,9 @@
 function on_index_html(html) {
     // Look for patterns like:  href="couchbase-server-community_x86_64_2.0.0c-709-rel.rpm.manifest.xml"
+
+    var urls = {}
+    var data = {} // Hierarchy of maps, keyed by name / version / build / arch / pkg.
+
     var hrefs = html.match(/href="[^\"]+\.manifest\.xml"/g);
     for (var i = 0; i < hrefs.length; i++) {
         var href = hrefs[i];
@@ -13,8 +17,33 @@ function on_index_html(html) {
         if (suffix && suffix[2]) {
             var pkg = suffix[2].split('.')[suffix[2].split('.').length - 3];
             console.debug(url, name, arch, version, build, pkg);
+
+            var p = { "url": url,
+                      "name": name,
+                      "version": version,
+                      "build": build,
+                      "arch": arch,
+                      "pkg": pkg };
+            urls[url] = p;
+
+            add_entry(data, [name, version, build, arch, pkg], p);
         }
     }
+
+    console.debug($('#content'));
+    console.debug(urls);
+    console.debug(data);
+}
+
+function add_entry(hier, path, val) {
+    for (var i = 0; i < path.length - 1; i++) {
+        var m = hier[path[i]];
+        if (!m) {
+            m = hier[path[i]] = {};
+        }
+        hier = m;
+    }
+    hier[path.length - 1] = val;
 }
 
 function on_ready() {
