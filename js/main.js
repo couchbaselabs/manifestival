@@ -45,19 +45,29 @@ function add_entry(hier, path, val) {
 
 function gen(hier) {
     var r = [];
-    for (var name in keys(hier).sort()) {
+    var names = keys(hier).sort();
+    for (var i0 = 0; i0 < names.length; i0++) {
+        var name = names[i0];
         r[r.length] = '<div class="name">' + name + '<div class="versions">';
         var versions = hier[name];
-        for (var version in keys(versions).sort()) {
+        var k1 = keys(versions).sort();
+        for (var i1 = 0; i1 < k1.length; i1++) {
+            var version = k1[i1];
             r[r.length] = '<div class="version">' + version + '<div class="builds">';
             var builds = versions[version];
-            for (var build in keys(builds).sort().reverse()) {
+            var k2 = keys(builds).sort().reverse();
+            for (var i2 = 0; i2 < k2.length; i2++) {
+                var build = k2[i2];
                 r[r.length] = '<div class="build">' + build + '<div class="archs">';
                 var archs = builds[build];
-                for (var arch in keys(archs).sort()) {
+                var k3 = keys(archs).sort();
+                for (var i3 = 0; i3 < k3.length; i3++) {
+                    var arch = k3[i3];
                     r[r.length] = '<div class="arch">' + arch + '<div class="pkgs">';
                     var pkgs = archs[arch];
-                    for (var pkg in keys(pkgs).sort()) {
+                    var k4 = keys(pkgs).sort();
+                    for (var i4 = 0; i4 < k4.length; i4++) {
+                        var pkg = k4[i4];
                         var p = pkgs[pkg];
                         var u = (p.url || '').replace('.manifest.xml', '');
                         r[r.length] = '<div class="pkg"><a href="' + u + '">' + pkg + '</a></div>';
