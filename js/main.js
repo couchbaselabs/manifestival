@@ -29,7 +29,7 @@ function on_index_html(html) {
         }
     }
 
-    var r = gen(hier, [false, true, true, false]);
+    var r = gen(hier, [false, false, true, true]);
     var t = [];
     var names = map_keys(hier).sort();
     for (var i = 0; i < names.length; i++) {
