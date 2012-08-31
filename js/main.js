@@ -1,3 +1,5 @@
+var FAVORED = ['2.0.0', '2.0.0b']; // List these earlier than others.
+
 function on_index_html(html) {
     // Look for patterns like:  href="couchbase-server-community_x86_64_2.0.0c-709-rel.rpm.manifest.xml"
 
@@ -29,7 +31,7 @@ function on_index_html(html) {
         }
     }
 
-    var r = gen(hier, [false, true, true, true]);
+    var r = gen(hier, [false, false, true, true]);
     var t = [];
     var names = map_keys(hier).sort();
     for (var i = 0; i < names.length; i++) {
@@ -57,6 +59,12 @@ function add_entry(hier, path, val) {
 
 function gen(hier, reversals) {
     var keys = map_keys(hier).sort();
+    for (var i = 0; i < FAVORED.length; i++) {
+        var favored = FAVORED[i];
+        if (hier[favored]) {
+            keys.splice(0, keys.indexOf(favored)).unshift(favored);
+        }
+    }
     if (reversals[0]) {
         keys = keys.reverse();
     }
