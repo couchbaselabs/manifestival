@@ -70,7 +70,7 @@ function gen(hier) {
                         var pkg = k4[i4];
                         var p = pkgs[pkg];
                         var u = (p.url || '').replace('.manifest.xml', '');
-                        r[r.length] = '<div class="pkg"><a href="' + u + '">' + pkg + '</a></div>';
+                        r[r.length] = '<div class="pkg"><a href="../../' + u + '">' + pkg + '</a></div>';
                     }
                     r[r.length] = '</div></div>';
                 }
