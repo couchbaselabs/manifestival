@@ -46,7 +46,7 @@ function add_entry(hier, path, val) {
 function gen(hier) {
     var r = [];
     for (var name in keys(hier).sort()) {
-        hier[r.length] = '<div class="name">' + name + '<div class="versions">';
+        r[r.length] = '<div class="name">' + name + '<div class="versions">';
         var versions = hier[name];
         for (var version in keys(versions).sort()) {
             r[r.length] = '<div class="version">' + version + '<div class="builds">';
