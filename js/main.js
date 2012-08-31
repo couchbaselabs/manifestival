@@ -74,8 +74,13 @@ function gen(hier, reversals) {
             r.push('<td rowspan="' + child_n + '"><a name="' + key + '">' + key + '</a></td>');
             r = r.concat(child_r);
         } else {
-            var url = (val.url || '').replace('.manifest.xml', '');
-            r.push('<td><a href="../../' + url + '">' + key + '</a></td>');
+            if (val.url) {
+                if (i == 0) {
+                    r.push('<td><a href="../../' + val.url + '">manifest</a></td>');
+                }
+                var pkg_url = val.url.replace('.manifest.xml', '');
+                r.push('<td><a href="../../' + pkg_url + '">' + key + '</a></td>');
+            }
         }
     }
     return r;
