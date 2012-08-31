@@ -62,7 +62,8 @@ function gen(hier, reversals) {
     for (var i = 0; i < FAVORED.length; i++) {
         var favored = FAVORED[i];
         if (hier[favored]) {
-            keys.splice(0, keys.indexOf(favored)).unshift(favored);
+            keys.splice(keys.indexOf(favored), 1);
+            keys.unshift(favored);
         }
     }
     if (reversals[0]) {
