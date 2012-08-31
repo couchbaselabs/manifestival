@@ -45,19 +45,19 @@ function add_entry(hier, path, val) {
 
 function gen(hier) {
     var r = [];
-    for (var name in sort(keys(r))) {
+    for (var name in keys(r).sort()) {
         hier[r.length] = '<div class="name">' + name + '<div class="versions">';
         var versions = hier[name];
-        for (var version in sort(keys(versions))) {
+        for (var version in keys(versions).sort()) {
             r[r.length] = '<div class="version">' + version + '<div class="builds">';
             var builds = versions[version];
-            for (var build in sort(keys(builds)).reverse()) {
+            for (var build in keys(builds).sort().reverse()) {
                 r[r.length] = '<div class="build">' + build + '<div class="archs">';
                 var archs = builds[build];
-                for (var arch in sort(keys(archs))) {
+                for (var arch in keys(archs).sort()) {
                     r[r.length] = '<div class="arch">' + arch + '<div class="pkgs">';
                     var pkgs = archs[arch];
-                    for (var pkg in sort(keys(pkgs))) {
+                    for (var pkg in keys(pkgs).sort()) {
                         var p = pkgs[pkg];
                         var u = p.url.replace('.manifest.xml', '');
                         r[r.length] = '<div class="pkg"><a href="' + url + '">' + pkg + '</a></div>';
