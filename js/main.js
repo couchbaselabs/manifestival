@@ -29,8 +29,10 @@ function on_index_html(html) {
         }
     }
 
-    var r = gen(hier, [true, true, true, false]);
-    var h = '<table border="1"><tr>' + r.join('') + '</tr></table>';
+    var r = gen(hier, [false, true, true, false]);
+    var h = '<table border="1">' +
+        '<tr><th>name</th><th>version</th><th>build</th><th>arch</th><th colspan="3">pkg</th></tr>' +
+        '<tr>' + r.join('') + '</tr></table>';
 
     $('#content').html(h);
 }
@@ -83,7 +85,7 @@ function map_keys(m) {
 }
 
 function on_ready() {
-    if (false) {
+    if (document.URL.match(/^file:/)) {
         on_index_html('<a href="couchbase-server-community_x86_64_2.0.0c-709-rel.rpm.manifest.xml">' +
                       '<a href="couchbase-server-community_x86_64_2.0.0c-710-rel.rpm.manifest.xml">' +
                       '<a href="couchbase-server-community_x86_64_2.0.0c-710-rel.deb.manifest.xml">' +
