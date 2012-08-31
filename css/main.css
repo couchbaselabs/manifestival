@@ -1,3 +1,10 @@
+#content table, #content tr, #content td {
+    border: 1px solid #bbb;
+    vertical-align: top;
+}
+
+/* ------------------------------------------------------ */
+
 /*
  * HTML5 Boilerplate
  *
@@ -5,12 +12,6 @@
  * Credit left inline and big thanks to Nicolas Gallagher, Jonathan Neal,
  * Kroc Camen, and the H5BP dev community and team.
  */
-
-.versions, .version, .builds, .build, .archs, .arch, .pkgs, .pkg {
-  display: inline;
-  border: 1px solid #bbb;
-}
-
 
 /* ==========================================================================
    Base styles: opinionated defaults
@@ -302,3 +303,4 @@ textarea {
         page-break-after: avoid;
     }
 }
+

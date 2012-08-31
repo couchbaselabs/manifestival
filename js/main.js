@@ -37,7 +37,7 @@ function on_index_html(html) {
     }
     var h = '<ul>' + t.join('') + '</ul>';
 
-    h = h + '<table border="1">' +
+    h = h + '<table>' +
         '<tr><th>name</th><th>version</th><th>build</th><th>arch</th><th colspan="5">pkg</th></tr>' +
         '<tr>' + r.join('') + '</tr></table>';
 
@@ -60,7 +60,6 @@ function gen(hier, reversals) {
     if (reversals[0]) {
         keys = keys.reverse();
     }
-    console.debug(keys);
     var child_reversals = reversals.slice(1);
     var r = [];
     for (var i = 0; i < keys.length; i++) {
@@ -72,7 +71,6 @@ function gen(hier, reversals) {
                 r.push('</tr><tr>');
             }
             var child_n = (child_r.join('').match(/<tr>/g) || []).length + 1;
-            console.debug(i, key, child_n, child_r.join(''));
             r.push('<td rowspan="' + child_n + '"><a name="' + key + '">' + key + '</a></td>');
             r = r.concat(child_r);
         } else {
