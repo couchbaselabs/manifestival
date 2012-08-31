@@ -48,22 +48,22 @@ function gen(hier) {
     var names = keys(hier).sort();
     for (var i0 = 0; i0 < names.length; i0++) {
         var name = names[i0];
-        r[r.length] = '<div class="name">' + name + '<div class="versions">';
+        r[r.length] = '<div class="name">' + name + '<div class="versions">&nbsp;';
         var versions = hier[name];
         var k1 = keys(versions).sort().reverse();
         for (var i1 = 0; i1 < k1.length; i1++) {
             var version = k1[i1];
-            r[r.length] = '<div class="version">' + version + '<div class="builds">';
+            r[r.length] = '<div class="version">' + version + '<div class="builds">&nbsp;';
             var builds = versions[version];
             var k2 = keys(builds).sort().reverse();
             for (var i2 = 0; i2 < k2.length; i2++) {
                 var build = k2[i2];
-                r[r.length] = '<div class="build">' + build + '<div class="archs">';
+                r[r.length] = '<div class="build">' + build + '<div class="archs">&nbsp;';
                 var archs = builds[build];
                 var k3 = keys(archs).sort();
                 for (var i3 = 0; i3 < k3.length; i3++) {
                     var arch = k3[i3];
-                    r[r.length] = '<div class="arch">' + arch + '<div class="pkgs">';
+                    r[r.length] = '<div class="arch">' + arch + '<div class="pkgs">&nbsp;';
                     var pkgs = archs[arch];
                     var k4 = keys(pkgs).sort();
                     for (var i4 = 0; i4 < k4.length; i4++) {
