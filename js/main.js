@@ -29,7 +29,7 @@ function on_index_html(html) {
         }
     }
 
-    $('#content').html(gen(hier));
+    $('#content').html(gen(hier).join(''));
 }
 
 function add_entry(hier, path, val) {
