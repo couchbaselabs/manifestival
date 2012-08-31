@@ -16,7 +16,6 @@ function on_index_html(html) {
         var build = suffix[1];
         if (suffix && suffix[2]) {
             var pkg = suffix[2].split('.')[suffix[2].split('.').length - 3];
-            console.debug(url, name, arch, version, build, pkg);
 
             var p = { "url": url,
                       "name": name,
@@ -46,33 +45,40 @@ function add_entry(hier, path, val) {
 
 function gen(hier) {
     var r = [];
-    r[r.length] = '<ul>';
-    for (var name in hier) {
-        r[r.length] = '<li>' + name + '<ul>';
+    for (var name in sort(keys(r))) {
+        hier[r.length] = '<div class="name">' + name + '<div class="versions">';
         var versions = hier[name];
-        for (var version in versions) {
-            r[r.length] = '<li>' + version + '<ul>';
+        for (var version in sort(keys(versions))) {
+            r[r.length] = '<div class="version">' + version + '<div class="builds">';
             var builds = versions[version];
-            for (var build in builds) {
-                r[r.length] = '<li>' + build + '<ul>';
+            for (var build in sort(keys(builds)).reverse()) {
+                r[r.length] = '<div class="build">' + build + '<div class="archs">';
                 var archs = builds[build];
-                for (var arch in archs) {
-                    r[r.length] = '<li>' + arch;
+                for (var arch in sort(keys(archs))) {
+                    r[r.length] = '<div class="arch">' + arch + '<div class="pkgs">';
                     var pkgs = archs[arch];
-                    for (var pkg in pkgs) {
+                    for (var pkg in sort(keys(pkgs))) {
                         var p = pkgs[pkg];
-                        r[r.length] = '<a href="' + p.url + '">' + pkg + '</a>';
+                        var u = p.url.replace('.manifest.xml', '');
+                        r[r.length] = '<div class="pkg"><a href="' + url + '">' + pkg + '</a></div>';
                     }
-                    r[r.length] = '</li>';
+                    r[r.length] = '</div></div>';
                 }
-                r[r.length] = '</ul></li>';
+                r[r.length] = '</div></div>';
             }
-            r[r.length] = '</ul></li>';
+            r[r.length] = '</div></div>';
         }
-        r[r.length] = '</ul></li>';
+        r[r.length] = '</div></div>';
     }
-    r[r.length] = '</ul>';
     return r;
+}
+
+function keys(m) {
+    var keys = [];
+    for (var key in m) {
+        keys[keys.length] = key;
+    }
+    return keys;
 }
 
 function on_ready() {
