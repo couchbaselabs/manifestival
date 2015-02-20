@@ -46,6 +46,8 @@ var facets = { product: {},
                ext: {} };
 
 var styleHTML =
+    '<style id="facetChosen"></style>' +
+    '<style id="artifactChosen"></style>' +
     '<style>' +
     '  body * { font-family: sans-serif; font-size: 10pt; }' +
     '  .facets { float: left; padding: 20px 20px 20px 20px; }' +
@@ -57,15 +59,14 @@ var styleHTML =
     '  .details table { border-left: 10px solid #eee; padding-left: 20px; }' +
     '  .details table th { text-align: left; }' +
     '  .details table td.na { color: #ddd; }' +
+    '  .details table th button { display: block; width: 50px; height: 14px; padding: 2px 0 2px 0; font-size: 6px; text-align: center; }' +
     '  ul { list-style-type: none; padding: 0 0 0 20px; }' +
     '  ul.all button { background-color: #dfd; }' +
     '  button.chosen { background-color: #dfd; }' +
     '  button { background-color: #ddd; width: 10em; padding: 5px 5px 5px 10px;' +
               ' text-align: left; font-size: 8pt; }' +
     '  .inflight { padding-left: 30px; }' +
-    '</style>' +
-    '<style id="facetChosen"></style>' +
-    '<style id="artifactChosen"></style>';
+    '</style>';
 
 function main() {
     console.log("manifestival main");
@@ -355,18 +356,22 @@ function updateFacetResults() {
 
 var manifestXMLs = {}; // Keyed by manifest path, value is AJAX xml doc.
 
-var artifactsCur = []; // Currently chosen artifact indexes.
+var artifactsCur = []; // Currently chosen indexes into artifacts.
 
-function artifactChosen(i) {
-    var a = artifacts[i];
+function artifactChosen(artifactIdx) {
+    var a = artifacts[artifactIdx];
     var p = artifactManifestPath(a);
 
-    console.log("artifactChosen", i, a, p);
+    console.log("artifactChosen", artifactIdx, a, p);
 
-    artifactsCur.push(i);
-    artifactsCur = _.uniq(artifactsCur, false, function(i) {
-        return artifactManifestPath(artifacts[i]);
+    artifactsCur.push(artifactIdx);
+    artifactsCur = _.uniq(artifactsCur, false, function(artifactIdx) {
+        return artifactManifestPath(artifacts[artifactIdx]);
     });
+    artifactsCur = _.sortBy(artifactsCur, function(artifactIdx) {
+        return artifacts[artifactIdx].build;
+    });
+    artifactsCur.reverse();
 
     updateArtifactsChosen();
 
@@ -382,46 +387,43 @@ function artifactChosen(i) {
     }
 }
 
-function artifactUnchosen(i) {
-    artifactsCur.splice(i, 1);
+function artifactUnchosen(artifactIdx) {
+    artifactsCur = _.without(artifactsCur, artifactIdx);
     updateArtifactsChosen();
     updateComparison(artifactsCur);
 }
 
 function updateArtifactsChosen() {
-    $('#artifactChosen').html(_.map(artifactsCur, function(i) {
-        var a = artifacts[i];
+    $('#artifactChosen').html(_.map(artifactsCur, function(artifactIdx) {
+        var a = artifacts[artifactIdx];
         return '.results li.build_' + a.build + ' { background-color: #efe; }';
     }).join("\n"));
 }
 
 function artifactManifestPath(a) {
-    return '/' + a.product + '/' + a.release + '/' + a.build + '/' +
-            a.product + '-' + a.version + '-' + a.build + '-manifest.xml';
+    return '/' + a.product + '/' + a.release + '/' + a.build +
+           '/' + a.product + '-' + a.version + '-' + a.build + '-manifest.xml';
 }
 
 function updateComparison(artifactIdxs) {
-    var artifactsChosen =
-        _.sortBy(_.map(artifactIdxs, function(i) { return artifacts[i]; }), "build").reverse();
-    console.log("artifactsChosen", artifactsChosen);
-
-    var projects = { /* projectName => { artifactsChosenIdx => projectEl }. */ };
-    _.each(artifactsChosen, function(a, artifactsChosenIdx) {
+    var projects = { /* projectName => { i => projectEl }. */ };
+    _.each(artifactIdxs, function(artifactIdx, i) {
+        var a = artifacts[artifactIdx];
         var p = artifactManifestPath(a);
         var x = manifestXMLs[p];
         _.each($(x).find('project'), function(el) {
             el = $(el);
             var projectName = el.attr('name');
             projects[projectName] = projects[projectName] || [];
-            projects[projectName][artifactsChosenIdx] = el;
+            projects[projectName][i] = el;
             return name;
         });
     });
 
     var tbl = _.map(_.keys(projects).sort(), function(projectName) {
         return '<tr><th>' + projectName + '</th>' +
-            _.map(artifactsChosen, function(a, artifactsChosenIdx) {
-                var el = projects[projectName][artifactsChosenIdx];
+            _.map(artifactIdxs, function(artifactIdx, i) {
+                var el = projects[projectName][i];
                 if (el) {
                     return '<td>' + (el.attr("revision") || "").substring(0, 5) + '</td>';
                 } else {
@@ -430,11 +432,14 @@ function updateComparison(artifactIdxs) {
             }).join('') + '</tr>';
     }).join('');
 
-    var hdr = '<tr><th></th>' + _.map(artifactsChosen, function(a, i) {
-        var p = artifactManifestPath(a);
-        return '<th><a href="' + p + '">' + a.build + '</a>' +
-                   '<button onclick="artifactUnchosen(' + i + ')">X</button>' +
-               '</th>';
+    var hdr = '<tr><th></th>' +
+        _.map(artifactIdxs, function(artifactIdx, i) {
+            var a = artifacts[artifactIdx];
+            var p = artifactManifestPath(a);
+            return '<th>' +
+                     '<a href="' + p + '">' + a.build + '</a>' +
+                     '<button onclick="artifactUnchosen(' + artifactIdx + ')">X</button>' +
+                   '</th>';
     }).join('') + '</tr>';
 
     $(".details").html('<table>' + hdr + tbl + '</table>');
