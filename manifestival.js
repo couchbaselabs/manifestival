@@ -38,6 +38,14 @@ loadScripts();
 
 var m = {}; // Map of product.release.build.artifact hierarchy.
 
+var facets = {
+    arch: {},
+    ext: {},
+    platform: {},
+    product: {},
+    release: {}
+};
+
 function main() {
     console.log("manifestival main");
 
@@ -50,6 +58,7 @@ function main() {
 
 function loadProduct(product) { // Ex: "couchbase-server".
     console.log("loadProduct", product);
+
     $.ajax("/" + product, {
         success: function(h) {
             var hrefs = h.match(/href="[a-z][a-z\-_0-9]+\/"/g);
@@ -63,6 +72,7 @@ function loadProduct(product) { // Ex: "couchbase-server".
 
 function loadProductRelease(product, release) {
     console.log("loadProductRelease", product, release);
+
     $.ajax("/" + product + "/" + release, {
         success: function(h) {
             var hrefs = h.match(/href="[0-9][0-9]+\/"/g);
@@ -76,6 +86,7 @@ function loadProductRelease(product, release) {
 
 function loadProductReleaseBuild(product, release, build) {
     console.log("loadProductReleaseBuild", product, release, build);
+
     $.ajax("/" + product + "/" + release + "/" + build, {
         success: function(h) {
             var hrefs = h.match(/href="[a-z][a-z0-9\.\-_]+"/g);
@@ -99,8 +110,10 @@ function loadProductReleaseBuild(product, release, build) {
 
 function loadProductReleaseBuildArtifact(product, release, build, artifact) {
     console.log("loadProductReleaseBuildArtifact", product, release, build, artifact);
+
     var dots = artifact.split(".");
-    var ext = dots[dots.length - 1];                         // "rpm", "deb", "zip", "exe".
+    var ext = dots[dots.length - 1]; // "rpm", "deb", "zip", "exe", "xml".
+
     var basename = dots.slice(0, dots.length - 1).join("."); // "couchbase-server-enterprise-3.5.0-1326-centos6.x86_64".
     var noProduct = basename.substring(product.length + 1);  // "enterprise-3.5.0-1326-centos6.x86_64".
 
@@ -111,18 +124,29 @@ function loadProductReleaseBuildArtifact(product, release, build, artifact) {
     // "64", "32", "manifest".
     var arch = _.last(platformArch.split("_")).replace("amd64", "64").replace("x86", "32");
 
+    if (arch == "" || platform == "") { // Early builds might not follow naming convention.
+        return;
+    }
+
+    facets.arch[arch] = true;
+    facets.ext[ext] = true;
+    facets.platform[platform] = true;
+    facets.product[product] = true;
+    facets.release[release] = true;
+
     var p = m[product] = m[product] || {};
     var r = p[release] = p[release] || {};
     var b = r[build] = r[build] || {};
+
     b[artifact] = {
+        artifact: artifact,
+        basename: basename,
+        arch: arch,
+        build: build,
+        ext: ext,
+        platform: platform,
         product: product,
         release: release,
-        build: build,
-        artifact: artifact,
-        ext: ext,
-        basename: basename,
-        platform: platform,
-        arch: arch,
     };
 
     console.log(b[artifact]);
