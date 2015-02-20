@@ -38,13 +38,11 @@ loadScripts();
 
 var artifacts = [];
 
-var facets = {
-    arch: {},
-    ext: {},
-    platform: {},
-    product: {},
-    release: {}
-};
+var facets = { arch: {},
+               ext: {},
+               platform: {},
+               product: {},
+               release: {} };
 
 var styleHTML =
     '<style>' +
@@ -100,9 +98,11 @@ function loadProductRelease(product, release) {
     $.ajax("/" + product + "/" + release, {
         success: function(h) {
             var hrefs = h.match(/href="[0-9][0-9]+\/"/g);
-            for (var i = 0; hrefs && i < hrefs.length; i++) {
-                var build = hrefs[i].split('"')[1].replace('/', ''); // Ex: "1129".
-                loadProductReleaseBuild(product, release, build);
+            if (hrefs) {
+                for (var i = hrefs.length - 1; i >= 0; i--) {
+                    var build = hrefs[i].split('"')[1].replace('/', ''); // Ex: "1129".
+                    loadProductReleaseBuild(product, release, build);
+                }
             }
         }
     });
@@ -183,7 +183,7 @@ function addFacet(facet, value) {
                '</li>';
     }).join(""));
 
-    updateResults();
+    updateResultsLazy(500);
 }
 
 function facetChosen(facet, value) {
@@ -199,6 +199,18 @@ function facetChosen(facet, value) {
     updateResults();
 }
 
+var updateResultsRequested = false;
+
+function updateResultsLazy(msecs) {
+    if (!updateResultsRequested) {
+        updateResultsRequested = true;
+        setTimeout(function() {
+            updateResultsRequested = false;
+            updateResults();
+        }, msecs);
+    }
+}
+
 function updateResults() {
     var wantFacets = getWantFacets();
     console.log("wantFacets", wantFacets);
@@ -209,6 +221,8 @@ function updateResults() {
             (wantFacets.platform.all || wantFacets.platform[a.platform]) &&
             (wantFacets.product.all || wantFacets.product[a.product]) &&
             (wantFacets.release.all || wantFacets.release[a.release]);
+    }).sort(function(a, b) {
+        return a.build < b.build ? -1 : (a.build > b.build ? 1 : 0);
     });
     console.log("foundArtifacts", foundArtifacts);
 
