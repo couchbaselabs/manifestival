@@ -205,6 +205,7 @@ function updateResults() {
             if ($(el).hasClass('chosen')) {
                 var v = el.id.split('_')[1];
                 if (v && v.length > 0) {
+                    delete wantFacets[facet]['all'];
                     wantFacets[facet][v] = true;
                 }
             }
