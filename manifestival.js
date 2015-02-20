@@ -1,1 +1,1 @@
-console.log("manifestival is ready to party!");
+console.log("manifestival is ready to PARTY!");
