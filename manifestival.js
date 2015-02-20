@@ -68,4 +68,27 @@ function loadProductRelease(product, release) {
 
 function loadProductReleaseBuild(product, release, build) {
     console.log("loadProductReleaseBuild", product, release, build);
+    $.ajax("/" + product + "/" + release + "/" + build, {
+        success: function(h) {
+            var hrefs = h.match(/href="[a-z][a-z0-9\.\-_]+"/g);
+            for (var i = 0; hrefs && i < hrefs.length; i++) {
+                // Example artifacts...
+                //   couchbase-server-3.5.0-1326-manifest.xml
+                //   couchbase-server-enterprise-3.5.0-1326-centos6.x86_64.rpm
+                //   couchbase-server-enterprise-3.5.0-1326-centos7.x86_64.rpm
+                //   couchbase-server-enterprise_3.5.0-1326-debian7_amd64.deb
+                //   couchbase-server-enterprise_3.5.0-1326-macos_x86_64.zip
+                //   couchbase-server-enterprise_3.5.0-1326-ubuntu12.04_amd64.deb
+                //   couchbase-server-enterprise_3.5.0-1326-ubuntu14.04_amd64.deb
+                //   couchbase-server-enterprise_3.5.0-1326-windows_amd64.exe
+                //   couchbase-server-enterprise_3.5.0-1326-windows_x86.exe
+                var artifact = hrefs[i].split('"')[1];
+                loadProductReleaseBuildArtifact(product, release, build, artifact);
+            }
+        }
+    });
+}
+
+function loadProductReleaseBuildArtifact(product, release, build, artifact) {
+    console.log("loadProductReleaseBuildArtifact", product, release, build, artifact);
 }
