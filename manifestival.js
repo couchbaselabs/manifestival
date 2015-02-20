@@ -53,6 +53,7 @@ var styleHTML =
     '  .results li { display: none; padding: 10px 10px 10px 10px; min-width: 500px; }' +
     '  .results li.ext_xml { margin-top: 10px; border-top: 1px solid #999; padding-top: 20px; }' +
     '  .results li:hover { background-color: #eee; }' +
+    '  .details { float: left; padding: 20px 20px 20px 20px; }' +
     '  ul { list-style-type: none; padding: 0 0 0 20px; }' +
     '  ul.all button { background-color: #dfd; }' +
     '  button.chosen { background-color: #dfd; }' +
@@ -79,6 +80,8 @@ function main() {
                    '<div class="results">' +
                    '  <ul></ul>' +
                    '  <div class="inflight">loading...</div>' +
+                   '</div>' +
+                   '<div class="details">' +
                    '</div>' +
                    styleHTML);
 
@@ -384,6 +387,33 @@ function artifactManifestPath(a) {
 
 function updateComparison(artifactIdxs) {
     var artifactsChosen =
-        _.sortBy(_.map(artifactIdxs, function(i) { return artifacts[i]; }), "build");
+        _.sortBy(_.map(artifactIdxs, function(i) { return artifacts[i]; }), "build").reverse();
     console.log("artifactsChosen", artifactsChosen);
+
+    var projects = { /* projectName => { artifactsChosenIdx => projectEl }. */ };
+    _.each(artifactsChosen, function(a, artifactsChosenIdx) {
+        var p = artifactManifestPath(a);
+        var x = manifestXMLs[p];
+        _.each($(x).find('project'), function(el) {
+            el = $(el);
+            var projectName = el.attr('name');
+            projects[projectName] = projects[projectName] || [];
+            projects[projectName][artifactsChosenIdx] = el;
+            return name;
+        });
+    });
+
+    var h = _.map(_.keys(projects).sort(), function(projectName) {
+        return '<tr><td>' + projectName + '</td>' +
+            _.map(artifactsChosen, function(a, artifactsChosenIdx) {
+                var el = projects[projectName][artifactsChosenIdx];
+                if (el) {
+                    return '<td>' + (el.attr("revision") || "").substring(0, 5) + '</td>';
+                } else {
+                    return '<td>_none_</td>';
+                }
+            }).join('') + '</tr>';
+    }).join('');
+
+    $(".details").html('<table>' + h + '</table>');
 }
