@@ -39,6 +39,7 @@ loadScripts();
 var artifacts = [];
 
 var facets = { arch: {},
+               edition: {},
                ext: {},
                platform: {},
                product: {},
@@ -141,11 +142,13 @@ function loadProductReleaseBuildArtifact(product, release, build, artifact) {
     var basename = dots.slice(0, dots.length - 1).join("."); // "couchbase-server-enterprise-3.5.0-1326-centos6.x86_64".
     var noProduct = basename.substring(product.length + 1);  // "enterprise-3.5.0-1326-centos6.x86_64".
 
-    // "centos6.x86_64", "macos_x86_64", "ubuntu12.04_amd64", "windows_amd64", "manifest".
+    // Ex: "enterprise", "community", null;
+    var edition = (noProduct.match(/^[a-z]+/) || [])[0];
+    // Ex: "centos6.x86_64", "macos_x86_64", "ubuntu12.04_amd64", "windows_amd64", "manifest".
     var platformArch = _.last(noProduct.split("-"));
-    // "centos6", "macos", "ubuntu14", "windows", "manifest".
+    // Ex: "centos6", "macos", "ubuntu14", "windows", "manifest".
     var platform = platformArch.split("_")[0].replace(/x86/, "").replace(/\.$/, "");
-    // "64", "32", "manifest".
+    // Ex: "64", "32", "manifest".
     var arch = _.last(platformArch.split("_")).replace("amd64", "64").replace("x86", "32");
 
     if (arch == "" || platform == "") { // Early builds might not follow naming convention.
@@ -153,6 +156,7 @@ function loadProductReleaseBuildArtifact(product, release, build, artifact) {
     }
 
     addFacet("arch", arch);
+    addFacet("edition", edition);
     addFacet("ext", ext);
     addFacet("platform", platform);
     addFacet("product", product);
@@ -163,6 +167,7 @@ function loadProductReleaseBuildArtifact(product, release, build, artifact) {
         basename: basename,
         arch: arch,
         build: build,
+        edition: edition,
         ext: ext,
         platform: platform,
         product: product,
@@ -171,7 +176,7 @@ function loadProductReleaseBuildArtifact(product, release, build, artifact) {
 }
 
 function addFacet(facet, value) {
-    if (facets[facet][value]) {
+    if (!value || facets[facet][value]) {
         return;
     }
     facets[facet][value] = true;
@@ -217,6 +222,7 @@ function updateResults() {
 
     var foundArtifacts = _.filter(artifacts, function(a) {
         return (wantFacets.arch.all || wantFacets.arch[a.arch]) &&
+            (wantFacets.edition.all || wantFacets.edition[a.edition]) &&
             (wantFacets.ext.all || wantFacets.ext[a.ext]) &&
             (wantFacets.platform.all || wantFacets.platform[a.platform]) &&
             (wantFacets.product.all || wantFacets.product[a.product]) &&
