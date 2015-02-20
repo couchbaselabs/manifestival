@@ -53,7 +53,9 @@ var styleHTML =
     '  .results li { display: none; padding: 10px 10px 10px 10px; min-width: 500px; }' +
     '  .results li.ext_xml { margin-top: 10px; border-top: 1px solid #999; padding-top: 20px; }' +
     '  .results li:hover { background-color: #eee; }' +
-    '  .details { float: left; padding: 20px 20px 20px 20px; }' +
+    '  .details { float: left; padding: 80px 20px 20px 40px; }' +
+    '  .details table { border-left: 10px solid #eee; padding-left: 20px; }' +
+    '  .details table th { text-align: left; }' +
     '  ul { list-style-type: none; padding: 0 0 0 20px; }' +
     '  ul.all button { background-color: #dfd; }' +
     '  button.chosen { background-color: #dfd; }' +
@@ -359,8 +361,8 @@ function artifactChosen(i) {
 
     console.log("artifactChosen", i, a, p);
 
-    artifactCurr.unshift(i);
-    artifactCurr = _.uniq(artifactCurr.slice(0, 2), false, function(i) {
+    artifactCurr.push(i);
+    artifactCurr = _.uniq(artifactCurr, false, function(i) {
         return artifactManifestPath(artifacts[i]);
     });
 
@@ -403,17 +405,22 @@ function updateComparison(artifactIdxs) {
         });
     });
 
-    var h = _.map(_.keys(projects).sort(), function(projectName) {
-        return '<tr><td>' + projectName + '</td>' +
+    var tbl = _.map(_.keys(projects).sort(), function(projectName) {
+        return '<tr><th>' + projectName + '</th>' +
             _.map(artifactsChosen, function(a, artifactsChosenIdx) {
                 var el = projects[projectName][artifactsChosenIdx];
                 if (el) {
                     return '<td>' + (el.attr("revision") || "").substring(0, 5) + '</td>';
                 } else {
-                    return '<td>_none_</td>';
+                    return '<td class="na">N/A</td>';
                 }
             }).join('') + '</tr>';
     }).join('');
 
-    $(".details").html('<table>' + h + '</table>');
+    var hdr = '<tr><th></th>' + _.map(artifactsChosen, function(a) {
+        var p = artifactManifestPath(a);
+        return '<th><a href="' + p + '">' + a.build + '</a></th>';
+    }).join('') + '</tr>';
+
+    $(".details").html('<table>' + hdr + tbl + '</table>');
 }
