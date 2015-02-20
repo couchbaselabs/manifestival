@@ -46,6 +46,18 @@ var facets = {
     release: {}
 };
 
+var styleHTML =
+    '<style>' +
+    '  body * { font-family: sans-serif; }' +
+    '  .facets { float: left; padding: 20px 20px 20px 20px; }' +
+    '  .results { float: left; padding: 20px 20px 20px 20px; }' +
+    '  .results li { padding-bottom: 5px; }' +
+    '  ul { list-style-type: none; }' +
+    '  ul.all button { background-color: #dfd; }' +
+    '  button.chosen { background-color: #dfd; }' +
+    '  button { background-color: #ddd; width: 10em; padding: 5px 5px 5px 10px; text-align: left; }' +
+    '</style>';
+
 function main() {
     console.log("manifestival main");
 
@@ -60,14 +72,7 @@ function main() {
                      facetsUL +
                    '</div>' +
                    '<div class="results"><ul>loading...</ul></div>' +
-                   '<style>' +
-                   '  div.facets { float: left; padding: 20px 20px 20px 20px; }' +
-                   '  div.results { float: left; padding: 20px 20px 20px 20px; }' +
-                   '  ul { list-style-type: none; }' +
-                   '  ul.all button { background-color: #dfd; }' +
-                   '  button.chosen { background-color: #dfd; }' +
-                   '  button { background-color: #ddd; width: 10em;}' +
-                   '</style>');
+                   styleHTML);
 
     for (var i = 0; i < products.length; i++) {
         loadProduct(products[i]);
