@@ -4,7 +4,10 @@ var products = [
 
 console.log("manifestival awakes");
 
-var scriptServer = "127.0.0.1:8000"
+if (!window.scriptServer) {
+    window.scriptServer = "127.0.0.1:8000";
+}
+
 var scripts = [
     "jquery-2.1.3.min.js",
     "js-yaml-3.2.6.min.js",
