@@ -198,18 +198,24 @@ function updateResults() {
     var wantFacets = {};
     $('div.facets ul').each(function(i, el) {
         var classNames = el.className.split(' ');
+
         var facet = _.without(classNames, 'all');
+        wantFacets[facet] = {};
+
         var all = _.contains(classNames, 'all');
-        wantFacets[facet] = { all: all };
+        if (all) {
+            wantFacets[facet]['all'] = true;
+        }
+
         $('div.facets ul.' + facet + ' button').each(function(i, el) {
             if ($(el).hasClass('chosen')) {
                 var v = el.id.split('_')[1];
                 if (v && v.length > 0) {
-                    delete wantFacets[facet]['all'];
                     wantFacets[facet][v] = true;
                 }
             }
         });
     });
+
     console.log("wantFacets", wantFacets);
 }
