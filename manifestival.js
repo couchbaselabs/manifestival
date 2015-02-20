@@ -49,15 +49,16 @@ var styleHTML =
     '  body * { font-family: sans-serif; font-size: 10pt; }' +
     '  .facets { float: left; padding: 20px 20px 20px 20px; }' +
     '  .results { float: left; padding: 20px 20px 20px 20px; }' +
-    '  .results li { padding: 10px 10px 10px 10px; min-width: 500px; }' +
-    '  .results li.xml { margin-top: 10px; border-top: 1px solid #999; padding-top: 20px; }' +
+    '  .results li { display: none; padding: 10px 10px 10px 10px; min-width: 500px; }' +
+    '  .results li.ext_xml { margin-top: 10px; border-top: 1px solid #999; padding-top: 20px; }' +
     '  ul { list-style-type: none; padding: 0 0 0 20px; }' +
     '  ul.all button { background-color: #dfd; }' +
     '  button.chosen { background-color: #dfd; }' +
     '  button { background-color: #ddd; width: 10em; padding: 5px 5px 5px 10px;' +
               ' text-align: left; font-size: 8pt; }' +
     '  .inflight { padding-left: 30px; }' +
-    '</style>';
+    '</style>' +
+    '<style id="chosen"></style>';
 
 function main() {
     console.log("manifestival main");
@@ -216,19 +217,6 @@ function addFacet(facet, value) {
     updateResultsLazy(500);
 }
 
-function facetChosen(facet, value) {
-    console.log("facetChosen", facet, value);
-    var id = facet + '_' + value;
-    $(document.getElementById(id)).toggleClass('chosen'); // Since id might have embedded '.' chars.
-    if ($('ul.' + facet + ' button').hasClass('chosen')) {
-        $('ul.' + facet).removeClass('all');
-    } else {
-        $('ul.' + facet).addClass('all');
-    }
-
-    updateResults();
-}
-
 var updateResultsRequested = false;
 
 function updateResultsLazy(msecs) {
@@ -242,27 +230,21 @@ function updateResultsLazy(msecs) {
 }
 
 function updateResults() {
-    var wantFacets = getWantFacets();
-    console.log("wantFacets", wantFacets);
-
-    var foundArtifacts = _.filter(artifacts, function(a) {
-        return (wantFacets.arch.all || wantFacets.arch[a.arch]) &&
-            (wantFacets.edition.all || wantFacets.edition[a.edition]) &&
-            (wantFacets.ext.all || wantFacets.ext[a.ext]) &&
-            (wantFacets.platform.all || wantFacets.platform[a.platform]) &&
-            (wantFacets.product.all || wantFacets.product[a.product]) &&
-            (wantFacets.release.all || wantFacets.release[a.release]);
-    }).sort(function(a, b) {
-        if (a.build < b.build) return -1;
-        if (a.build > b.build) return 1;
-        if (b.artifact < a.artifact) return -1;
-        if (b.artifact > a.artifact) return 1;
+    artifacts.sort(function(a, b) {
+        if (b.build < a.build) return -1;
+        if (b.build > a.build) return 1;
+        if (a.artifact < b.artifact) return -1;
+        if (a.artifact > b.artifact) return 1;
         return 0;
     });
-    console.log("foundArtifacts", foundArtifacts);
 
-    var h = _.map(foundArtifacts.reverse(), function(a) {
-        return '<li class="' + a.ext + '">' +
+    var h = _.map(artifacts, function(a) {
+        return '<li class="arch_all arch_' + nodot(a.arch) +
+                         ' edition_all edition_' + nodot(a.edition) +
+                         ' ext_all ext_' + nodot(a.ext) +
+                         ' platform_all platform_' + nodot(a.platform) +
+                         ' product_all product_' + nodot(a.product) +
+                         ' release_all release_' + nodot(a.release) + '">' +
                  '<a href="/' +
                      a.product + '/' + a.release + '/' + a.build + '/' +
                      a.artifact + '">' +
@@ -270,11 +252,27 @@ function updateResults() {
     }).join("");
 
     $('.results ul').html(h);
+
+    updateChosen();
 }
 
-function getWantFacets() {
-    var wantFacets = {};
+function nodot(s) { return (s || "").replace(".", "_"); }
 
+function facetChosen(facet, value) {
+    console.log("facetChosen", facet, value);
+    var id = facet + '_' + value;
+    $(document.getElementById(id)).toggleClass('chosen'); // Since id might have embedded '.' chars.
+    if ($('ul.' + facet + ' button').hasClass('chosen')) {
+        $('ul.' + facet).removeClass('all');
+    } else {
+        $('ul.' + facet).addClass('all');
+    }
+
+    updateChosen();
+}
+
+function updateChosen() {
+    var wantFacets = {};
     $('div.facets ul').each(function(i, el) {
         var classNames = el.className.split(' ');
 
@@ -296,5 +294,35 @@ function getWantFacets() {
         });
     });
 
-    return wantFacets;
+    var facetKeys = _.keys(wantFacets);
+    var facetVals = [];
+    var cursor = [];
+    for (var i = 0 ; i < facetKeys.length; i++) {
+        facetVals.push(_.keys(wantFacets[facetKeys[i]]));
+        cursor.push(0);
+    }
+
+    var joined = [];
+    function join(cursor, col) {
+        if (col < cursor.length) {
+            joined.push(_.map(cursor, function(vi, ki) {
+                return facetKeys[ki] + '_' + nodot(facetVals[ki][vi]);
+            }).join('.'));
+            if (cursor[col] < facetVals[col].length - 1) {
+                var cursor2 = _.initial(cursor, 0);
+                cursor2[col] += 1;
+                join(cursor2, col);
+            }
+            join(_.initial(cursor, 0), col+1);
+        }
+    }
+    join(cursor, 0);
+    joined = _.uniq(joined);
+    console.log("joined", joined);
+
+    var h = _.map(joined, function(j) {
+        return '.results li.' + j + ' { display: block; }';
+    }).join("\n");
+
+    $('#chosen').html(h);
 }
