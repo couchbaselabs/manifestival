@@ -346,17 +346,44 @@ function updateFacetResults() {
 
 // ---------------------------------------------------------------
 
-var currArtifactIds = [];
+var manifestXMLs = {}; // Keyed by manifest path, value is AJAX xml doc.
+
+var artifactCurr = []; // Currently chosen artifact indexes.
 
 function artifactChosen(i) {
-    console.log("artifactChosen", i, artifacts[i]);
+    var a = artifacts[i];
+    var p = artifactManifestPath(a);
 
-    currArtifactIds.unshift(i);
-    currArtifactIds = currArtifactIds.slice(0, 2);
+    console.log("artifactChosen", i, a, p);
 
-    var h = _.map(currArtifactIds, function(artifactId) {
-        return '.results li#artifact_' + artifactId + ' { background-color: #dfd; }';
-    }).join("\n");
+    artifactCurr.unshift(i);
+    artifactCurr = _.uniq(artifactCurr.slice(0, 2), false, function(i) {
+        return artifactManifestPath(artifacts[i]);
+    });
 
-    $('#artifactChosen').html(h);
+    $('#artifactChosen').html(_.map(artifactCurr, function(i) {
+        return '.results li#artifact_' + i + ' { background-color: #dfd; }';
+    }).join("\n"));
+
+    if (!manifestXMLs[p]) {
+        $.ajax(p, {
+            success: function(xml) {
+                manifestXMLs[p] = xml;
+                updateComparison(artifactCurr);
+            }
+        });
+    } else {
+        updateComparison(artifactCurr);
+    }
+}
+
+function artifactManifestPath(a) {
+    return '/' + a.product + '/' + a.release + '/' + a.build + '/' +
+            a.product + '-' + a.version + '-' + a.build + '-manifest.xml';
+}
+
+function updateComparison(artifactIdxs) {
+    var artifactsChosen =
+        _.sortBy(_.map(artifactIdxs, function(i) { return artifacts[i]; }), "build");
+    console.log("artifactsChosen", artifactsChosen);
 }
