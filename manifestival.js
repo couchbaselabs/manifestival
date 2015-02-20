@@ -57,7 +57,7 @@ var styleHTML =
     '  .results li:hover { background-color: #eee; }' +
     '  .details { float: left; padding: 80px 20px 20px 40px; }' +
     '  .details table { border-left: 10px solid #eee; padding-left: 20px; }' +
-    '  .details table th { text-align: left; }' +
+    '  .details table th { text-align: left; padding-right: 10px; }' +
     '  .details table td.na { color: #ddd; }' +
     '  .details table th button { display: block; width: 50px; height: 14px; padding: 2px 0 2px 0; font-size: 6px; text-align: center; }' +
     '  ul { list-style-type: none; padding: 0 0 0 20px; }' +
