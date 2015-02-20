@@ -51,6 +51,7 @@ var styleHTML =
     '  .results { float: left; padding: 20px 20px 20px 20px; }' +
     '  .results li { display: none; padding: 10px 10px 10px 10px; min-width: 500px; }' +
     '  .results li.ext_xml { margin-top: 10px; border-top: 1px solid #999; padding-top: 20px; }' +
+    '  .results li:hover { background-color: #eee; }' +
     '  ul { list-style-type: none; padding: 0 0 0 20px; }' +
     '  ul.all button { background-color: #dfd; }' +
     '  button.chosen { background-color: #dfd; }' +
