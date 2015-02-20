@@ -241,7 +241,6 @@ function updateResultsLazy(msecs) {
     }
 }
 
-
 function updateResults() {
     var wantFacets = getWantFacets();
     console.log("wantFacets", wantFacets);
