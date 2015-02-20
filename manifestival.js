@@ -49,7 +49,15 @@ var facets = {
 function main() {
     console.log("manifestival main");
 
-    $("body").html("loading data...");
+    var facetsUL = _.keys(facets).map(function(facet) {
+        return '<ul class="' + facet + '"></ul>';
+    }).join("\n");
+
+    $("body").html('<div class="facets">' +
+                   facetsUL +
+                   '</div>' +
+                   '<div class="results"></div>' +
+                   '<style id="styles"></style>');
 
     for (var i = 0; i < products.length; i++) {
         loadProduct(products[i]);
