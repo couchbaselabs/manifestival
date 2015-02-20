@@ -51,7 +51,7 @@ var styleHTML =
     '  .facets { float: left; padding: 20px 20px 20px 20px; }' +
     '  .results { float: left; padding: 20px 20px 20px 20px; }' +
     '  .results li { padding: 10px 10px 10px 10px; min-width: 500px; }' +
-    '  .results li.xml { margin-top: 10px; border-top: 1px solid #999; }' +
+    '  .results li.xml { margin-top: 10px; border-top: 1px solid #999; padding-top: 20px; }' +
     '  ul { list-style-type: none; padding: 0 0 0 20px; }' +
     '  ul.all button { background-color: #dfd; }' +
     '  button.chosen { background-color: #dfd; }' +
