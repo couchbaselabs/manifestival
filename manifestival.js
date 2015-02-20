@@ -36,7 +36,7 @@ loadScripts();
 
 // ---------------------------------------------------------------
 
-var m = {}; // Map of product.release.build.artifact hierarchy.
+var artifacts = [];
 
 var facets = {
     arch: {},
@@ -59,9 +59,11 @@ function main() {
     $("body").html('<div class="facets">' +
                      facetsUL +
                    '</div>' +
-                   '<div class="results">loading...</div>' +
+                   '<div class="results"><ul>loading...</ul></div>' +
                    '<style>' +
-                   '  div.facets { float: left; }' +
+                   '  div.facets { float: left; padding: 20px 20px 20px 20px; }' +
+                   '  div.results { float: left; padding: 20px 20px 20px 20px; }' +
+                   '  ul { list-style-type: none; }' +
                    '  ul.all button { background-color: #dfd; }' +
                    '  button.chosen { background-color: #dfd; }' +
                    '  button { background-color: #ddd; width: 10em;}' +
@@ -150,11 +152,7 @@ function loadProductReleaseBuildArtifact(product, release, build, artifact) {
     addFacet("product", product);
     addFacet("release", release);
 
-    var p = m[product] = m[product] || {};
-    var r = p[release] = p[release] || {};
-    var b = r[build] = r[build] || {};
-
-    b[artifact] = {
+    artifacts.push({
         artifact: artifact,
         basename: basename,
         arch: arch,
@@ -163,9 +161,7 @@ function loadProductReleaseBuildArtifact(product, release, build, artifact) {
         platform: platform,
         product: product,
         release: release,
-    };
-
-    console.log(b[artifact]);
+    });
 }
 
 function addFacet(facet, value) {
@@ -173,12 +169,15 @@ function addFacet(facet, value) {
         return;
     }
     facets[facet][value] = true;
+
     $("ul." + facet).html(_.keys(facets[facet]).sort().map(function(v) {
         return '<li><button id="' + facet + '_' + v + '"' +
                           ' onclick="facetChosen(\'' + facet + '\', \'' + v + '\')">' + v +
                    '</button>' +
                '</li>';
     }).join(""));
+
+    updateResults();
 }
 
 function facetChosen(facet, value) {
@@ -195,7 +194,31 @@ function facetChosen(facet, value) {
 }
 
 function updateResults() {
+    var wantFacets = getWantFacets();
+    console.log("wantFacets", wantFacets);
+
+    var foundArtifacts = _.filter(artifacts, function(a) {
+        return (wantFacets.arch.all || wantFacets.arch[a.arch]) &&
+            (wantFacets.ext.all || wantFacets.ext[a.ext]) &&
+            (wantFacets.platform.all || wantFacets.platform[a.platform]) &&
+            (wantFacets.product.all || wantFacets.product[a.product]) &&
+            (wantFacets.release.all || wantFacets.release[a.release]);
+    });
+    console.log("foundArtifacts", foundArtifacts);
+
+    var h = _.map(foundArtifacts.reverse(), function(a) {
+        return '<li><a href="/' +
+                       a.product + '/' + a.release + '/' + a.build + '/' +
+                       a.artifact + '">' +
+                       a.artifact + '</a></li>';
+    }).join("");
+
+    $('.results ul').html(h);
+}
+
+function getWantFacets() {
     var wantFacets = {};
+
     $('div.facets ul').each(function(i, el) {
         var classNames = el.className.split(' ');
 
@@ -217,5 +240,5 @@ function updateResults() {
         });
     });
 
-    console.log("wantFacets", wantFacets);
+    return wantFacets;
 }
