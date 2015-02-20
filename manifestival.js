@@ -50,14 +50,22 @@ function main() {
     console.log("manifestival main");
 
     var facetsUL = _.keys(facets).map(function(facet) {
-        return '<ul class="' + facet + '"></ul>';
+        return '<div>' +
+               '  <h2>' + facet + '</h2>' +
+               '  <ul class="' + facet + ' all">loading...</ul>' +
+               '</div>';
     }).join("\n");
 
     $("body").html('<div class="facets">' +
-                   facetsUL +
+                     facetsUL +
                    '</div>' +
-                   '<div class="results"></div>' +
-                   '<style id="styles"></style>');
+                   '<div class="results">loading...</div>' +
+                   '<style>' +
+                   '  div.facets { float: left; }' +
+                   '  ul.all button { background-color: #dfd; }' +
+                   '  button.chosen { background-color: #dfd; }' +
+                   '  button { background-color: #ddd; width: 10em;}' +
+                   '</style>');
 
     for (var i = 0; i < products.length; i++) {
         loadProduct(products[i]);
@@ -136,11 +144,11 @@ function loadProductReleaseBuildArtifact(product, release, build, artifact) {
         return;
     }
 
-    facets.arch[arch] = true;
-    facets.ext[ext] = true;
-    facets.platform[platform] = true;
-    facets.product[product] = true;
-    facets.release[release] = true;
+    addFacet("arch", arch);
+    addFacet("ext", ext);
+    addFacet("platform", platform);
+    addFacet("product", product);
+    addFacet("release", release);
 
     var p = m[product] = m[product] || {};
     var r = p[release] = p[release] || {};
@@ -158,5 +166,29 @@ function loadProductReleaseBuildArtifact(product, release, build, artifact) {
     };
 
     console.log(b[artifact]);
+}
+
+function addFacet(facet, value) {
+    if (facets[facet][value]) {
+        return;
+    }
+    facets[facet][value] = true;
+    $("ul." + facet).html(_.keys(facets[facet]).sort().map(function(v) {
+        return '<li><button id="' + facet + '_' + v + '"' +
+                          ' onclick="facetChosen(\'' + facet + '\', \'' + v + '\')">' + v +
+                   '</button>' +
+               '</li>';
+    }).join(""));
+}
+
+function facetChosen(facet, value) {
+    console.log("facetChosen", facet, value);
+    var id = facet + '_' + value;
+    $(document.getElementById(id)).toggleClass('chosen'); // Since id might have embedded '.' chars.
+    if ($('ul.' + facet + ' button').hasClass('chosen')) {
+        $('ul.' + facet).removeClass('all');
+    } else {
+        $('ul.' + facet).addClass('all');
+    }
 }
 
