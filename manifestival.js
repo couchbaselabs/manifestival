@@ -59,7 +59,8 @@ var styleHTML =
               ' text-align: left; font-size: 8pt; }' +
     '  .inflight { padding-left: 30px; }' +
     '</style>' +
-    '<style id="chosen"></style>';
+    '<style id="facetChosen"></style>' +
+    '<style id="artifactChosen"></style>';
 
 function main() {
     console.log("manifestival main");
@@ -84,6 +85,8 @@ function main() {
         loadProduct(products[i]);
     }
 }
+
+// ---------------------------------------------------------------
 
 var inflightNum = 0;
 
@@ -218,6 +221,8 @@ function addFacet(facet, value) {
     updateResultsLazy(500);
 }
 
+// ---------------------------------------------------------------
+
 var updateResultsRequested = false;
 
 function updateResultsLazy(msecs) {
@@ -239,13 +244,15 @@ function updateResults() {
         return 0;
     });
 
-    var h = _.map(artifacts, function(a) {
-        return '<li class="arch_all arch_' + nodot(a.arch) +
+    var h = _.map(artifacts, function(a, i) {
+        return '<li id="artifact_' + i + '"' +
+                  ' class="arch_all arch_' + nodot(a.arch) +
                          ' edition_all edition_' + nodot(a.edition) +
                          ' ext_all ext_' + nodot(a.ext) +
                          ' platform_all platform_' + nodot(a.platform) +
                          ' product_all product_' + nodot(a.product) +
-                         ' release_all release_' + nodot(a.release) + '">' +
+                         ' release_all release_' + nodot(a.release) + '"' +
+                  ' onclick="artifactChosen(' + i + ')">' +
                  '<a href="/' +
                      a.product + '/' + a.release + '/' + a.build + '/' +
                      a.artifact + '">' +
@@ -254,10 +261,12 @@ function updateResults() {
 
     $('.results ul').html(h);
 
-    updateChosen();
+    updateFacetResults();
 }
 
 function nodot(s) { return (s || "").replace(".", "_"); }
+
+// ---------------------------------------------------------------
 
 function facetChosen(facet, value) {
     console.log("facetChosen", facet, value);
@@ -269,10 +278,10 @@ function facetChosen(facet, value) {
         $('ul.' + facet).addClass('all');
     }
 
-    updateChosen();
+    updateFacetResults();
 }
 
-function updateChosen() {
+function updateFacetResults() {
     var wantFacets = {};
     $('div.facets ul').each(function(i, el) {
         var classNames = el.className.split(' ');
@@ -325,5 +334,22 @@ function updateChosen() {
         return '.results li.' + j + ' { display: block; }';
     }).join("\n");
 
-    $('#chosen').html(h);
+    $('#facetChosen').html(h);
+}
+
+// ---------------------------------------------------------------
+
+var currArtifactIds = [];
+
+function artifactChosen(i) {
+    console.log("artifactChosen", i, artifacts[i]);
+
+    currArtifactIds.unshift(i);
+    currArtifactIds = currArtifactIds.slice(0, 2);
+
+    var h = _.map(currArtifactIds, function(artifactId) {
+        return '.results li#artifact_' + artifactId + ' { background-color: #dfd; }';
+    }).join("\n");
+
+    $('#artifactChosen').html(h);
 }
