@@ -36,8 +36,13 @@ loadScripts();
 
 // ---------------------------------------------------------------
 
+var m = {}; // Map of product.release.build.artifact hierarchy.
+
 function main() {
     console.log("manifestival main");
+
+    $("body").html("loading data...");
+
     for (var i = 0; i < products.length; i++) {
         loadProduct(products[i]);
     }
@@ -94,4 +99,32 @@ function loadProductReleaseBuild(product, release, build) {
 
 function loadProductReleaseBuildArtifact(product, release, build, artifact) {
     console.log("loadProductReleaseBuildArtifact", product, release, build, artifact);
+    var dots = artifact.split(".");
+    var ext = dots[dots.length - 1];                         // "rpm", "deb", "zip", "exe".
+    var basename = dots.slice(0, dots.length - 1).join("."); // "couchbase-server-enterprise-3.5.0-1326-centos6.x86_64".
+    var noProduct = basename.substring(product.length + 1);  // "enterprise-3.5.0-1326-centos6.x86_64".
+
+    // "centos6.x86_64", "macos_x86_64", "ubuntu12.04_amd64", "windows_amd64", "manifest".
+    var platformArch = _.last(noProduct.split("-"));
+    // "centos6", "macos", "ubuntu14", "windows", "manifest".
+    var platform = platformArch.split("_")[0].replace(/x86/, "").replace(/\.$/, "");
+    // "64", "32", "manifest".
+    var arch = _.last(platformArch.split("_")).replace("amd64", "64").replace("x86", "32");
+
+    var p = m[product] = m[product] || {};
+    var r = p[release] = p[release] || {};
+    var b = r[build] = r[build] || {};
+    b[artifact] = {
+        product: product,
+        release: release,
+        build: build,
+        artifact: artifact,
+        ext: ext,
+        basename: basename,
+        platform: platform,
+        arch: arch,
+    };
+
+    console.log(b[artifact]);
 }
+
