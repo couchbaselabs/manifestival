@@ -190,5 +190,25 @@ function facetChosen(facet, value) {
     } else {
         $('ul.' + facet).addClass('all');
     }
+
+    updateResults();
 }
 
+function updateResults() {
+    var wantFacets = {};
+    $('div.facets ul').each(function(i, el) {
+        var classNames = el.className.split(' ');
+        var facet = _.without(classNames, 'all');
+        var all = _.contains(classNames, 'all');
+        wantFacets[facet] = { all: all };
+        $('div.facets ul.' + facet + ' button').each(function(i, el) {
+            if ($(el).hasClass('chosen')) {
+                var v = el.id.split('_')[1];
+                if (v && v.length > 0) {
+                    wantFacets[facet][v] = true;
+                }
+            }
+        });
+    });
+    console.log("wantFacets", wantFacets);
+}
