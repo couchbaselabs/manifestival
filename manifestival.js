@@ -50,13 +50,14 @@ var styleHTML =
     '  body * { font-family: sans-serif; font-size: 10pt; }' +
     '  .facets { float: left; padding: 20px 20px 20px 20px; }' +
     '  .results { float: left; padding: 20px 20px 20px 20px; }' +
-    '  .results li { padding-bottom: 5px; }' +
+    '  .results li { padding: 10px 10px 10px 10px; min-width: 500px; }' +
+    '  .results li.xml { margin-top: 10px; border-top: 1px solid #999; }' +
     '  ul { list-style-type: none; padding: 0 0 0 20px; }' +
     '  ul.all button { background-color: #dfd; }' +
     '  button.chosen { background-color: #dfd; }' +
     '  button { background-color: #ddd; width: 10em; padding: 5px 5px 5px 10px;' +
               ' text-align: left; font-size: 8pt; }' +
-    '  .inflight { padding-left: 20px; }' +
+    '  .inflight { padding-left: 30px; }' +
     '</style>';
 
 function main() {
@@ -73,7 +74,7 @@ function main() {
                      facetsUL +
                    '</div>' +
                    '<div class="results">' +
-                   '  <ul>loading...</ul>' +
+                   '  <ul></ul>' +
                    '  <div class="inflight">loading...</div>' +
                    '</div>' +
                    styleHTML);
@@ -241,6 +242,7 @@ function updateResultsLazy(msecs) {
     }
 }
 
+
 function updateResults() {
     var wantFacets = getWantFacets();
     console.log("wantFacets", wantFacets);
@@ -253,15 +255,20 @@ function updateResults() {
             (wantFacets.product.all || wantFacets.product[a.product]) &&
             (wantFacets.release.all || wantFacets.release[a.release]);
     }).sort(function(a, b) {
-        return a.build < b.build ? -1 : (a.build > b.build ? 1 : 0);
+        if (a.build < b.build) return -1;
+        if (a.build > b.build) return 1;
+        if (b.artifact < a.artifact) return -1;
+        if (b.artifact > a.artifact) return 1;
+        return 0;
     });
     console.log("foundArtifacts", foundArtifacts);
 
     var h = _.map(foundArtifacts.reverse(), function(a) {
-        return '<li><a href="/' +
-                       a.product + '/' + a.release + '/' + a.build + '/' +
-                       a.artifact + '">' +
-                       a.artifact + '</a></li>';
+        return '<li class="' + a.ext + '">' +
+                 '<a href="/' +
+                     a.product + '/' + a.release + '/' + a.build + '/' +
+                     a.artifact + '">' +
+                     a.artifact + '</a></li>';
     }).join("");
 
     $('.results ul').html(h);
