@@ -37,12 +37,12 @@ loadScripts();
 
 var artifacts = [];
 
-var facets = { arch: {},
+var facets = { product: {},
+               release: {},
                edition: {},
-               ext: {},
                platform: {},
-               product: {},
-               release: {} };
+               arch: {},
+               ext: {} };
 
 var styleHTML =
     '<style>' +
