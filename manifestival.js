@@ -48,14 +48,15 @@ var facets = {
 
 var styleHTML =
     '<style>' +
-    '  body * { font-family: sans-serif; }' +
+    '  body * { font-family: sans-serif; font-size: 10pt; }' +
     '  .facets { float: left; padding: 20px 20px 20px 20px; }' +
     '  .results { float: left; padding: 20px 20px 20px 20px; }' +
     '  .results li { padding-bottom: 5px; }' +
     '  ul { list-style-type: none; }' +
     '  ul.all button { background-color: #dfd; }' +
     '  button.chosen { background-color: #dfd; }' +
-    '  button { background-color: #ddd; width: 10em; padding: 5px 5px 5px 10px; text-align: left; }' +
+    '  button { background-color: #ddd; width: 10em; padding: 5px 5px 5px 10px;' +
+              ' text-align: left; font-size: 8pt; }' +
     '</style>';
 
 function main() {
