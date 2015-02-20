@@ -51,11 +51,12 @@ var styleHTML =
     '  .facets { float: left; padding: 20px 20px 20px 20px; }' +
     '  .results { float: left; padding: 20px 20px 20px 20px; }' +
     '  .results li { padding-bottom: 5px; }' +
-    '  ul { list-style-type: none; }' +
+    '  ul { list-style-type: none; padding: 0 0 0 20px; }' +
     '  ul.all button { background-color: #dfd; }' +
     '  button.chosen { background-color: #dfd; }' +
     '  button { background-color: #ddd; width: 10em; padding: 5px 5px 5px 10px;' +
               ' text-align: left; font-size: 8pt; }' +
+    '  .inflight { padding-left: 20px; }' +
     '</style>';
 
 function main() {
@@ -64,14 +65,17 @@ function main() {
     var facetsUL = _.keys(facets).map(function(facet) {
         return '<div>' +
                '  <h2>' + facet + '</h2>' +
-               '  <ul class="' + facet + ' all">loading...</ul>' +
+               '  <ul class="' + facet + ' all"></ul>' +
                '</div>';
     }).join("\n");
 
     $("body").html('<div class="facets">' +
                      facetsUL +
                    '</div>' +
-                   '<div class="results"><ul>loading...</ul></div>' +
+                   '<div class="results">' +
+                   '  <ul>loading...</ul>' +
+                   '  <div class="inflight">loading...</div>' +
+                   '</div>' +
                    styleHTML);
 
     for (var i = 0; i < products.length; i++) {
@@ -79,11 +83,28 @@ function main() {
     }
 }
 
+var inflightNum = 0;
+
+function inflight(delta) {
+    inflightNum += delta;
+    if (inflightNum > 0) {
+        var s = "";
+        for (var i = 0; i < inflightNum && i < 20; i++) {
+            s = s + ".";
+        }
+        $(".inflight").text("loading..." + s);
+    } else {
+        $(".inflight").text("");
+    }
+}
+
 function loadProduct(product) { // Ex: "couchbase-server".
     console.log("loadProduct", product);
 
+    inflight(1);
     $.ajax("/" + product, {
         success: function(h) {
+            inflight(-1);
             var hrefs = h.match(/href="[a-z][a-z\-_0-9]+\/"/g);
             for (var i = 0; hrefs && i < hrefs.length; i++) {
                 var release = hrefs[i].split('"')[1].replace('/', ''); // Ex: "sherlock".
@@ -96,8 +117,10 @@ function loadProduct(product) { // Ex: "couchbase-server".
 function loadProductRelease(product, release) {
     console.log("loadProductRelease", product, release);
 
+    inflight(1);
     $.ajax("/" + product + "/" + release, {
         success: function(h) {
+            inflight(-1);
             var hrefs = h.match(/href="[0-9][0-9]+\/"/g);
             if (hrefs) {
                 for (var i = hrefs.length - 1; i >= 0; i--) {
@@ -112,8 +135,10 @@ function loadProductRelease(product, release) {
 function loadProductReleaseBuild(product, release, build) {
     console.log("loadProductReleaseBuild", product, release, build);
 
+    inflight(1);
     $.ajax("/" + product + "/" + release + "/" + build, {
         success: function(h) {
+            inflight(-1);
             var hrefs = h.match(/href="[a-z][a-z0-9\.\-_]+"/g);
             for (var i = 0; hrefs && i < hrefs.length; i++) {
                 // Example artifacts...
