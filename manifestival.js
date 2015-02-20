@@ -58,8 +58,9 @@ var styleHTML =
     '  .details { float: left; padding: 80px 20px 20px 40px; }' +
     '  .details table { border-left: 10px solid #eee; padding-left: 20px; }' +
     '  .details table th { text-align: left; padding-right: 10px; }' +
+    '  .details table td { color: #999; }' +
     '  .details table td.na { color: #ddd; }' +
-    '  .details table td.diff { background-color: #fcc; }' +
+    '  .details table td.diff { background-color: #fcc; font-weight: bold; }' +
     '  .details table th button { display: block; width: 50px; height: 14px;' +
               ' margin-top: 20px; padding: 2px 0 2px 0;' +
               ' font-size: 6px; text-align: center; }' +
@@ -409,6 +410,11 @@ function artifactManifestPath(a) {
 }
 
 function updateComparison(artifactIdxs) {
+    if (artifactIdxs.length <= 0) {
+        $(".details").html("");
+        return;
+    }
+
     var projects = { /* projectName => { i => projectEl }. */ };
     _.each(artifactIdxs, function(artifactIdx, i) {
         var a = artifacts[artifactIdx];
@@ -445,7 +451,7 @@ function updateComparison(artifactIdxs) {
             }).join('') + '</tr>';
     }).join('');
 
-    var hdr = '<tr><th></th>' +
+    var hdr = '<tr><td>projects</td>' +
         _.map(artifactIdxs, function(artifactIdx, i) {
             var a = artifacts[artifactIdx];
             var p = artifactManifestPath(a);
