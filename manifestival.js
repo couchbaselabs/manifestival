@@ -40,6 +40,7 @@ var artifacts = [];
 var facets = { product: {},
                release: {},
                edition: {},
+               version: {},
                platform: {},
                arch: {},
                ext: {} };
@@ -174,6 +175,8 @@ function loadProductReleaseBuildArtifact(product, release, build, artifact) {
 
     // Ex: "enterprise", "community", null;
     var edition = (noProduct.match(/^[a-z]+/) || [])[0];
+    // Ex: "3.5.0".
+    var version = noProduct.replace(/^[a-z\-_]+/, '').split(/[\-_]/)[0];
     // Ex: "centos6.x86_64", "macos_x86_64", "ubuntu12.04_amd64", "windows_amd64", "manifest".
     var platformArch = _.last(noProduct.split("-"));
     // Ex: "centos6", "macos", "ubuntu14", "windows", "manifest".
@@ -185,12 +188,14 @@ function loadProductReleaseBuildArtifact(product, release, build, artifact) {
         return;
     }
 
+
     addFacet("arch", arch);
     addFacet("edition", edition);
     addFacet("ext", ext);
     addFacet("platform", platform);
     addFacet("product", product);
     addFacet("release", release);
+    addFacet("version", version);
 
     artifacts.push({
         artifact: artifact,
@@ -202,6 +207,7 @@ function loadProductReleaseBuildArtifact(product, release, build, artifact) {
         platform: platform,
         product: product,
         release: release,
+        version: version
     });
 }
 
@@ -251,7 +257,8 @@ function updateResults() {
                          ' ext_all ext_' + nodot(a.ext) +
                          ' platform_all platform_' + nodot(a.platform) +
                          ' product_all product_' + nodot(a.product) +
-                         ' release_all release_' + nodot(a.release) + '"' +
+                         ' release_all release_' + nodot(a.release) +
+                         ' version_all version_' + nodot(a.version) + '"' +
                   ' onclick="artifactChosen(' + i + ')">' +
                  '<a href="/' +
                      a.product + '/' + a.release + '/' + a.build + '/' +
@@ -264,7 +271,7 @@ function updateResults() {
     updateFacetResults();
 }
 
-function nodot(s) { return (s || "").replace(".", "_"); }
+function nodot(s) { return (s || "").replace(/\./g, "_"); }
 
 // ---------------------------------------------------------------
 
