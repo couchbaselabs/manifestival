@@ -59,7 +59,10 @@ var styleHTML =
     '  .details table { border-left: 10px solid #eee; padding-left: 20px; }' +
     '  .details table th { text-align: left; padding-right: 10px; }' +
     '  .details table td.na { color: #ddd; }' +
-    '  .details table th button { display: block; width: 50px; height: 14px; padding: 2px 0 2px 0; font-size: 6px; text-align: center; }' +
+    '  .details table td.diff { background-color: #fcc; }' +
+    '  .details table th button { display: block; width: 50px; height: 14px;' +
+              ' margin-top: 20px; padding: 2px 0 2px 0;' +
+              ' font-size: 6px; text-align: center; }' +
     '  ul { list-style-type: none; padding: 0 0 0 20px; }' +
     '  ul.all button { background-color: #dfd; }' +
     '  button.chosen { background-color: #dfd; }' +
@@ -421,14 +424,24 @@ function updateComparison(artifactIdxs) {
     });
 
     var tbl = _.map(_.keys(projects).sort(), function(projectName) {
+        function revision(i) {
+            var el = projects[projectName][i];
+            if (el && el.attr("revision")) {
+                return el.attr("revision").substring(0, 5);
+            }
+            return null;
+        }
+
         return '<tr><th>' + projectName + '</th>' +
             _.map(artifactIdxs, function(artifactIdx, i) {
-                var el = projects[projectName][i];
-                if (el) {
-                    return '<td>' + (el.attr("revision") || "").substring(0, 5) + '</td>';
-                } else {
-                    return '<td class="na">N/A</td>';
-                }
+                var cur = revision(i);
+                var same = (i <= 0 ||
+                            cur == revision(i - 1)) &&
+                           (i >= artifactIdxs.length - 1 ||
+                            cur == revision(i + 1));
+                return '<td class="' + (!cur && 'na') + ' ' + (!same && 'diff') + '">' +
+                          (cur || "N/A") +
+                       '</td>';
             }).join('') + '</tr>';
     }).join('');
 
