@@ -258,7 +258,8 @@ function updateResults() {
 
     var h = _.map(artifacts, function(a, i) {
         return '<li id="artifact_' + i + '"' +
-                  ' class="arch_all arch_' + nodot(a.arch) +
+                  ' class="build_' + (a.build) +
+                         ' arch_all arch_' + nodot(a.arch) +
                          ' edition_all edition_' + nodot(a.edition) +
                          ' ext_all ext_' + nodot(a.ext) +
                          ' platform_all platform_' + nodot(a.platform) +
@@ -354,7 +355,7 @@ function updateFacetResults() {
 
 var manifestXMLs = {}; // Keyed by manifest path, value is AJAX xml doc.
 
-var artifactCurr = []; // Currently chosen artifact indexes.
+var artifactsCur = []; // Currently chosen artifact indexes.
 
 function artifactChosen(i) {
     var a = artifacts[i];
@@ -362,25 +363,36 @@ function artifactChosen(i) {
 
     console.log("artifactChosen", i, a, p);
 
-    artifactCurr.push(i);
-    artifactCurr = _.uniq(artifactCurr, false, function(i) {
+    artifactsCur.push(i);
+    artifactsCur = _.uniq(artifactsCur, false, function(i) {
         return artifactManifestPath(artifacts[i]);
     });
 
-    $('#artifactChosen').html(_.map(artifactCurr, function(i) {
-        return '.results li#artifact_' + i + ' { background-color: #dfd; }';
-    }).join("\n"));
+    updateArtifactsChosen();
 
     if (!manifestXMLs[p]) {
         $.ajax(p, {
             success: function(xml) {
                 manifestXMLs[p] = xml;
-                updateComparison(artifactCurr);
+                updateComparison(artifactsCur);
             }
         });
     } else {
-        updateComparison(artifactCurr);
+        updateComparison(artifactsCur);
     }
+}
+
+function artifactUnchosen(i) {
+    artifactsCur.splice(i, 1);
+    updateArtifactsChosen();
+    updateComparison(artifactsCur);
+}
+
+function updateArtifactsChosen() {
+    $('#artifactChosen').html(_.map(artifactsCur, function(i) {
+        var a = artifacts[i];
+        return '.results li.build_' + a.build + ' { background-color: #efe; }';
+    }).join("\n"));
 }
 
 function artifactManifestPath(a) {
@@ -418,9 +430,11 @@ function updateComparison(artifactIdxs) {
             }).join('') + '</tr>';
     }).join('');
 
-    var hdr = '<tr><th></th>' + _.map(artifactsChosen, function(a) {
+    var hdr = '<tr><th></th>' + _.map(artifactsChosen, function(a, i) {
         var p = artifactManifestPath(a);
-        return '<th><a href="' + p + '">' + a.build + '</a></th>';
+        return '<th><a href="' + p + '">' + a.build + '</a>' +
+                   '<button onclick="artifactUnchosen(' + i + ')">X</button>' +
+               '</th>';
     }).join('') + '</tr>';
 
     $(".details").html('<table>' + hdr + tbl + '</table>');
