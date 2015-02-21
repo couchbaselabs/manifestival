@@ -11,8 +11,6 @@ if (!window.scriptServer) {
 var scripts = [
     "jquery-2.1.3.min.js",
     "underscore-1.7.0.min.js",
-    "velocity-1.2.2/velocity.min.js",
-    "velocity-1.2.2/velocity.ui.min.js"
 ];
 
 function loadScripts() {
