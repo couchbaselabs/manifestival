@@ -59,7 +59,7 @@ var styleHTML =
     '  .details { padding: 80px 20px 20px 40px; }' +
     '  .details table { border-left: 10px solid #eee; padding-left: 20px; }' +
     '  .details table th { text-align: left; padding-right: 10px; }' +
-    '  .details table td * { color: #999; }' +
+    '  .details table td { color: #999; }' +
     '  .details table td.na * { color: #ddd; }' +
     '  .details table td.diff { background-color: #fcc; font-weight: bold; }' +
     '  .details table td a.compare { float: right; background-color: #f99; text-align: right; }' +
@@ -491,15 +491,15 @@ function updateComparison(artifactIdxs) {
                 var sameL = (i <= 0 || cur == revision(i - 1));
                 var sameR = (i >= artifactIdxs.length - 1 || cur == revision(i + 1));
                 var same = sameL && sameR;
-                var diffLink = "";
+                var compareLink = "";
                 if (!sameR) {
-                    diffLink = '<a class="compare" href="' + projectURL + '/compare/' +
+                    compareLink = '<a class="compare" href="' + projectURL + '/compare/' +
                         revisionFull(i + 1) + '...' +
                         revisionFull(i) + '">&#8596;</a>';
                 }
 
                 return '<td class="' + (!cur && 'na') + ' ' + (!same && 'diff') + '">' +
-                          diffLink + curLink +
+                          compareLink + curLink +
                        '</td>';
             }).join('') + '</tr>';
     }).join('');
