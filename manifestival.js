@@ -60,8 +60,8 @@ var styleHTML =
     '  .details { float: left; padding: 80px 20px 20px 40px; }' +
     '  .details table { border-left: 10px solid #eee; padding-left: 20px; }' +
     '  .details table th { text-align: left; padding-right: 10px; }' +
-    '  .details table td { color: #999; }' +
-    '  .details table td.na { color: #ddd; }' +
+    '  .details table td * { color: #999; }' +
+    '  .details table td.na * { color: #ddd; }' +
     '  .details table td.diff { background-color: #fcc; font-weight: bold; }' +
     '  .details table th button { display: block; width: 50px; height: 14px;' +
               ' margin-top: 20px; padding: 2px 0 2px 0;' +
@@ -450,6 +450,7 @@ function updateComparison(artifactIdxs) {
             return null;
         }
 
+        var projectURL = "";
         var projectLink = projectName;
         var projectEl = projects[projectName][0];
         if (projectEl) {
@@ -457,23 +458,23 @@ function updateComparison(artifactIdxs) {
             var remoteEl = remotes[remoteName];
             if (remoteEl) {
                 var fetch = remoteEl.attr("fetch") || "";
-                projectLink =
-                    '<a href="http://' +
-                        fetch.replace("git://", "").replace("ssh://git@", "") + projectName + '">' +
-                    projectName + '</a>';
+                projectURL = 'http://' + fetch.replace("git://", "").replace("ssh://git@", "") + projectName;
+                projectLink = '<a href="' + projectURL + '">' + projectName + '</a>';
             }
         }
 
         return '<tr><th>' + projectLink + '</th>' +
             _.map(artifactIdxs, function(artifactIdx, i) {
+                var curLink = "N/A";
                 var cur = revision(i);
+                if (cur && projectURL) {
+                    curLink = '<a href="' + projectURL + '/commit/' + cur + '">' + cur + '</a>';
+                }
                 var same = (i <= 0 ||
                             cur == revision(i - 1)) &&
                            (i >= artifactIdxs.length - 1 ||
                             cur == revision(i + 1));
-                return '<td class="' + (!cur && 'na') + ' ' + (!same && 'diff') + '">' +
-                          (cur || "N/A") +
-                       '</td>';
+                return '<td class="' + (!cur && 'na') + ' ' + (!same && 'diff') + '">' + curLink + '</td>';
             }).join('') + '</tr>';
     }).join('');
 
