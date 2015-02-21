@@ -212,7 +212,6 @@ function loadProductReleaseBuildArtifact(product, release, build, artifact) {
         return;
     }
 
-
     addFacet("arch", arch);
     addFacet("edition", edition);
     addFacet("ext", ext);
