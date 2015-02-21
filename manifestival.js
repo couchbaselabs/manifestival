@@ -50,6 +50,8 @@ var styleHTML =
     '  body * { font-family: sans-serif; font-size: 10pt; }' +
     '  a { text-decoration: none; }' +
     '  a:hover { text-decoration: underline; }' +
+    '  h1 { padding: 20px 10px 0 10px; }' +
+    '  h1 a { color: black; }' +
     '  table * { vertical-align: top; }' +
     '  .facets { padding: 20px 20px 20px 20px; }' +
     '  .results { padding: 20px 20px 20px 20px; }' +
@@ -92,6 +94,7 @@ function main() {
     $("body").html('<table>' +
                    '<tr>' +
                      '<td>' +
+                       '<h1><a href="/manifestival.html">manifestival</a></h1>' +
                        '<div class="facets">' +
                          facetsUL +
                        '</div>' +
