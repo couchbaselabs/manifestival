@@ -50,6 +50,8 @@ var styleHTML =
     '<style id="artifactChosen"></style>' +
     '<style>' +
     '  body * { font-family: sans-serif; font-size: 10pt; }' +
+    '  a { text-decoration: none; }' +
+    '  a:hover { text-decoration: underline; }' +
     '  .facets { float: left; padding: 20px 20px 20px 20px; }' +
     '  .results { float: left; padding: 20px 20px 20px 20px; }' +
     '  .results li { display: none; padding: 10px 10px 10px 10px; min-width: 500px; }' +
@@ -416,6 +418,9 @@ function updateComparison(artifactIdxs) {
     }
 
     var projects = { /* projectName => { i => projectEl }. */ };
+    var remotes = { /* remoteName => remoteEl }. */ };
+    var defaultEl = null;
+
     _.each(artifactIdxs, function(artifactIdx, i) {
         var a = artifacts[artifactIdx];
         var p = artifactManifestPath(a);
@@ -427,18 +432,39 @@ function updateComparison(artifactIdxs) {
             projects[projectName][i] = el;
             return name;
         });
+        _.each($(x).find('remote'), function(el) {
+            el = $(el);
+            remotes[el.attr('name')] = el;
+        });
+        _.each($(x).find('default'), function(el) {
+            defaultEl = $(el);
+        });
     });
 
     var tbl = _.map(_.keys(projects).sort(), function(projectName) {
         function revision(i) {
             var el = projects[projectName][i];
             if (el && el.attr("revision")) {
-                return el.attr("revision").substring(0, 5);
+                return el.attr("revision").substring(0, 6);
             }
             return null;
         }
 
-        return '<tr><th>' + projectName + '</th>' +
+        var projectLink = projectName;
+        var projectEl = projects[projectName][0];
+        if (projectEl) {
+            var remoteName = $(projectEl).attr('remote') || defaultEl.attr("remote");
+            var remoteEl = remotes[remoteName];
+            if (remoteEl) {
+                var fetch = remoteEl.attr("fetch") || "";
+                projectLink =
+                    '<a href="http://' +
+                        fetch.replace("git://", "").replace("ssh://git@", "") + projectName + '">' +
+                    projectName + '</a>';
+            }
+        }
+
+        return '<tr><th>' + projectLink + '</th>' +
             _.map(artifactIdxs, function(artifactIdx, i) {
                 var cur = revision(i);
                 var same = (i <= 0 ||
