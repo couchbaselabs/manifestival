@@ -62,7 +62,8 @@ var styleHTML =
     '  .details table td { color: #999; }' +
     '  .details table td.na * { color: #ddd; }' +
     '  .details table td.diff { background-color: #fcc; font-weight: bold; }' +
-    '  .details table td a.compare { float: right; background-color: #f99; text-align: right; }' +
+    '  .details table td a.compare { float: right; background-color: #f9f; text-align: right; }' +
+    '  .details table td a.compare:hover { background-color: #f3f; }' +
     '  .details table th button { display: block; width: 70px; height: 14px;' +
               ' margin-top: 20px; padding: 2px 0 2px 0;' +
               ' font-size: 6px; text-align: center; }' +
@@ -495,7 +496,7 @@ function updateComparison(artifactIdxs) {
                 if (!sameR) {
                     compareLink = '<a class="compare" href="' + projectURL + '/compare/' +
                         revisionFull(i + 1) + '...' +
-                        revisionFull(i) + '">&#8596;</a>';
+                        revisionFull(i) + '">&nbsp;&#8596;&nbsp;</a>';
                 }
 
                 return '<td class="' + (!cur && 'na') + ' ' + (!same && 'diff') + '">' +
