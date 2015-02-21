@@ -67,6 +67,7 @@ var styleHTML =
     '  .details table td.diff { background-color: #fcc; font-weight: bold; }' +
     '  .details table td a.compare { float: right; background-color: #f9f; text-align: right; }' +
     '  .details table td a.compare:hover { background-color: #f3f; }' +
+    '  .details table td.projects { vertical-align: bottom; padding-bottom: 10px; }' +
     '  .details table th button { display: block; width: 70px; height: 14px;' +
               ' margin-top: 20px; padding: 2px 0 2px 0;' +
               ' font-size: 6px; text-align: center; }' +
@@ -516,7 +517,9 @@ function updateComparison(artifactIdxs) {
             }).join('') + '</tr>';
     }).join('');
 
-    var hdr = '<tr><td>projects</td>' +
+    var hdr =
+        '<tr><td></td><td>builds</td></tr>' +
+        '<tr><td class="projects">projects</td>' +
         _.map(artifactIdxs, function(artifactIdx, i) {
             var a = artifacts[artifactIdx];
             var p = artifactManifestPath(a);
