@@ -56,6 +56,9 @@ var styleHTML =
     '  .results li { display: none; padding: 10px 10px 10px 10px; min-width: 500px; }' +
     '  .results li.ext_xml { margin-top: 10px; border-top: 1px solid #999; padding-top: 20px; }' +
     '  .results li:hover { background-color: #eee; }' +
+    '  .results li .hint { display: none; float: right; margin: 0 0; background-color: #dfd;' +
+              ' padding: 5px 5px 5px 5px; font-size: 5px; vertical-align: top; }' +
+    '  .results li:hover .hint { display: inline-block; }' +
     '  .details { padding: 80px 20px 20px 40px; }' +
     '  .details table { border-left: 10px solid #eee; padding-left: 20px; }' +
     '  .details table th { text-align: left; padding-right: 10px; }' +
@@ -284,10 +287,12 @@ function updateResults() {
                          ' release_all release_' + nodot(a.release) +
                          ' version_all version_' + nodot(a.version) + '"' +
                   ' onclick="artifactChosen(' + i + ')">' +
+                 '<span class="hint">&gt;&gt;</span>' +
                  '<a href="/' +
                      a.product + '/' + a.release + '/' + a.build + '/' +
                      a.artifact + '">' +
-                     a.artifact + '</a></li>';
+                     a.artifact + '</a>' +
+               '</li>';
     }).join("");
 
     $('.results ul').html(h);
