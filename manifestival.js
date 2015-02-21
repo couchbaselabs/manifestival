@@ -50,12 +50,13 @@ var styleHTML =
     '  body * { font-family: sans-serif; font-size: 10pt; }' +
     '  a { text-decoration: none; }' +
     '  a:hover { text-decoration: underline; }' +
-    '  .facets { float: left; padding: 20px 20px 20px 20px; }' +
-    '  .results { float: left; padding: 20px 20px 20px 20px; }' +
+    '  table * { vertical-align: top; }' +
+    '  .facets { padding: 20px 20px 20px 20px; }' +
+    '  .results { padding: 20px 20px 20px 20px; }' +
     '  .results li { display: none; padding: 10px 10px 10px 10px; min-width: 500px; }' +
     '  .results li.ext_xml { margin-top: 10px; border-top: 1px solid #999; padding-top: 20px; }' +
     '  .results li:hover { background-color: #eee; }' +
-    '  .details { float: left; padding: 80px 20px 20px 40px; }' +
+    '  .details { padding: 80px 20px 20px 40px; }' +
     '  .details table { border-left: 10px solid #eee; padding-left: 20px; }' +
     '  .details table th { text-align: left; padding-right: 10px; }' +
     '  .details table td * { color: #999; }' +
@@ -83,15 +84,25 @@ function main() {
                '</div>';
     }).join("\n");
 
-    $("body").html('<div class="facets">' +
-                     facetsUL +
-                   '</div>' +
-                   '<div class="results">' +
-                   '  <ul></ul>' +
-                   '  <div class="inflight">loading...</div>' +
-                   '</div>' +
-                   '<div class="details">' +
-                   '</div>' +
+    $("body").html('<table>' +
+                   '<tr>' +
+                     '<td>' +
+                       '<div class="facets">' +
+                         facetsUL +
+                       '</div>' +
+                     '</td>' +
+                     '<td>' +
+                       '<div class="results">' +
+                       '  <ul></ul>' +
+                       '  <div class="inflight">loading...</div>' +
+                       '</div>' +
+                     '</td>' +
+                     '<td>' +
+                       '<div class="details">' +
+                       '</div>' +
+                     '</td>' +
+                   '</tr>' +
+                   '</table>' +
                    styleHTML);
 
     for (var i = 0; i < products.length; i++) {
