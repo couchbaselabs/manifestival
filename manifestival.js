@@ -475,14 +475,17 @@ function updateComparison(artifactIdxs) {
 
         var projectURL = "";
         var projectLink = projectName;
-        var projectEl = projects[projectName][0];
-        if (projectEl) {
-            var remoteName = $(projectEl).attr('remote') || defaultEl.attr("remote");
-            var remoteEl = remotes[remoteName];
-            if (remoteEl) {
-                var fetch = remoteEl.attr("fetch") || "";
-                projectURL = 'http://' + fetch.replace("git://", "").replace("ssh://git@", "") + projectName;
-                projectLink = '<a href="' + projectURL + '">' + projectName + '</a>';
+        for (var i = 0; i < projects[projectName].length; i++) {
+            var projectEl = projects[projectName][i];
+            if (projectEl) {
+                var remoteName = $(projectEl).attr('remote') || defaultEl.attr("remote");
+                var remoteEl = remotes[remoteName];
+                if (remoteEl) {
+                    var fetch = remoteEl.attr("fetch") || "";
+                    projectURL = 'http://' + fetch.replace("git://", "").replace("ssh://git@", "") + projectName;
+                    projectLink = '<a href="' + projectURL + '">' + projectName + '</a>';
+                    break;
+                }
             }
         }
 
@@ -498,9 +501,13 @@ function updateComparison(artifactIdxs) {
                 var same = sameL && sameR;
                 var compareLink = "";
                 if (!sameR) {
-                    compareLink = '<a class="compare" href="' + projectURL + '/compare/' +
-                        revisionFull(i + 1) + '...' +
-                        revisionFull(i) + '">&nbsp;&#8596;&nbsp;</a>';
+                    var curRevFull = revisionFull(i);
+                    var rightRevFull = revisionFull(i + 1);
+                    if (curRevFull && rightRevFull) {
+                        compareLink = '<a class="compare" href="' + projectURL + '/compare/' +
+                            rightRevFull + '...' +
+                            curRevFull + '">&nbsp;&#8596;&nbsp;</a>';
+                    }
                 }
 
                 return '<td class="' + (!cur && 'na') + ' ' + (!same && 'diff') + '">' +
