@@ -61,7 +61,8 @@ var styleHTML =
     '  .details table td * { color: #999; }' +
     '  .details table td.na * { color: #ddd; }' +
     '  .details table td.diff { background-color: #fcc; font-weight: bold; }' +
-    '  .details table th button { display: block; width: 50px; height: 14px;' +
+    '  .details table td a.compare { float: right; background-color: #f99; text-align: right; }' +
+    '  .details table th button { display: block; width: 70px; height: 14px;' +
               ' margin-top: 20px; padding: 2px 0 2px 0;' +
               ' font-size: 6px; text-align: center; }' +
     '  ul { list-style-type: none; padding: 0 0 0 20px; }' +
@@ -441,9 +442,17 @@ function updateComparison(artifactIdxs) {
 
     var tbl = _.map(_.keys(projects).sort(), function(projectName) {
         function revision(i) {
+            var r = revisionFull(i);
+            if (r) {
+                return r.substring(0, 6);
+            }
+            return null;
+        }
+
+        function revisionFull(i) {
             var el = projects[projectName][i];
             if (el && el.attr("revision")) {
-                return el.attr("revision").substring(0, 6);
+                return el.attr("revision");
             }
             return null;
         }
@@ -468,11 +477,19 @@ function updateComparison(artifactIdxs) {
                 if (cur && projectURL) {
                     curLink = '<a href="' + projectURL + '/commit/' + cur + '">' + cur + '</a>';
                 }
-                var same = (i <= 0 ||
-                            cur == revision(i - 1)) &&
-                           (i >= artifactIdxs.length - 1 ||
-                            cur == revision(i + 1));
-                return '<td class="' + (!cur && 'na') + ' ' + (!same && 'diff') + '">' + curLink + '</td>';
+                var sameL = (i <= 0 || cur == revision(i - 1));
+                var sameR = (i >= artifactIdxs.length - 1 || cur == revision(i + 1));
+                var same = sameL && sameR;
+                var diffLink = "";
+                if (!sameR) {
+                    diffLink = '<a class="compare" href="' + projectURL + '/compare/' +
+                        revisionFull(i + 1) + '...' +
+                        revisionFull(i) + '">&#8596;</a>';
+                }
+
+                return '<td class="' + (!cur && 'na') + ' ' + (!same && 'diff') + '">' +
+                          diffLink + curLink +
+                       '</td>';
             }).join('') + '</tr>';
     }).join('');
 
