@@ -249,6 +249,8 @@ function loadProductReleaseBuildArtifact(product, release, build, artifact) {
         release: release,
         version: version
     });
+
+    updateResultsLazy(500);
 }
 
 function addFacet(facet, value) {
@@ -263,8 +265,6 @@ function addFacet(facet, value) {
                    '</button>' +
                '</li>';
     }).join(""));
-
-    updateResultsLazy(500);
 }
 
 // ---------------------------------------------------------------
