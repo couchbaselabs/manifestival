@@ -160,9 +160,19 @@ function loadProductRelease(product, release) {
             inflight(-1);
             var hrefs = h.match(/href="[0-9][0-9]+\/"/g);
             if (hrefs) {
+                var n = 0;
                 for (var i = hrefs.length - 1; i >= 0; i--) {
                     var build = hrefs[i].split('"')[1].replace('/', ''); // Ex: "1129".
-                    loadProductReleaseBuild(product, release, build);
+                    if (n < 10) {
+                        loadProductReleaseBuild(product, release, build);
+                    } else {
+                        (function(product, release, build) {
+                            setTimeout(function() {
+                                loadProductReleaseBuild(product, release, build);
+                            }, 500 + (Math.floor(n / 10) * 200));
+                        })(product, release, build);
+                    }
+                    n++;
                 }
             }
         }
