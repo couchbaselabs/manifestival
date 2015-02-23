@@ -77,7 +77,7 @@ var styleHTML =
     '  ul.all button { background-color: #dfd; }' +
     '  button.chosen { background-color: #dfd; }' +
     '  button { background-color: #ddd; width: 10em; padding: 5px 5px 5px 10px;' +
-              ' text-align: left; font-size: 8pt; }' +
+              ' text-align: left; font-size: 8pt; color: #000;}' +
     '  .inflight { padding-left: 30px; }' +
     '</style>';
 
